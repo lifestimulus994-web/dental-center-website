@@ -1,0 +1,11 @@
+# source material / not part of the site
+Prompting Guide.txt
+*.jpeg
+f860421ee90c60cb50b0c3f802547fe2.jpg
+დენტალ ცენტრი ლოჰო.png
+
+# editor / os
+.DS_Store
+Thumbs.db
+node_modules/
+.vercel
