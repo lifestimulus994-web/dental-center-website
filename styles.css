@@ -154,7 +154,38 @@ a{color:inherit;text-decoration:none}
   content:"✓";position:absolute;left:0;top:2px;width:22px;height:22px;border-radius:50%;
   background:var(--green);color:#fff;font-size:13px;display:grid;place-items:center;font-weight:700;
 }
+.about-brands{margin-top:18px;font-size:15.5px}
+.about-brands strong{color:var(--ink);font-weight:600}
 .stats-row{display:flex;gap:30px;margin-top:30px;flex-wrap:wrap}
+
+/* BRAND MARQUEE */
+.section.about{padding-bottom:0}
+.brand-strip{margin-top:76px;background:var(--ink);padding:28px 0 32px;overflow:hidden}
+.brand-strip-title{
+  color:#8ba1af;font-size:13px;font-weight:500;text-align:center;margin-bottom:22px;
+}
+.marquee{
+  overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%);
+}
+.marquee-track{display:flex;width:max-content;animation:marquee-scroll 40s linear infinite}
+.marquee-group{display:flex;align-items:center;gap:58px;padding-right:58px}
+.marquee img{
+  width:150px;height:52px;object-fit:contain;flex:0 0 auto;
+  filter:brightness(0) invert(1);opacity:.72;
+  transition:opacity .3s ease;
+}
+.marquee:hover .marquee-track{animation-play-state:paused}
+.marquee img:hover{opacity:1}
+@keyframes marquee-scroll{
+  from{transform:translate3d(0,0,0)}
+  to{transform:translate3d(-50%,0,0)}
+}
+@media(prefers-reduced-motion:reduce){
+  .marquee-track{animation:none}
+  .marquee{mask-image:none;-webkit-mask-image:none;overflow-x:auto}
+}
 .stat{display:flex;align-items:center;gap:10px}
 .stat strong{font-size:38px;font-weight:700;color:var(--blue);line-height:1}
 .stat strong.stat-static{font-size:32px}
@@ -285,6 +316,10 @@ a{color:inherit;text-decoration:none}
   .about-media img{height:300px}
   .doctor-photo{height:330px}
   .doctor-facts li{font-size:13.5px}
+  .brand-strip{margin-top:54px;padding:24px 0 26px}
+  .marquee-group{gap:38px;padding-right:38px}
+  .marquee img{width:112px;height:42px}
+  .marquee-track{animation-duration:28s}
   .stats-row{gap:22px}
   .stat strong{font-size:32px}
 }
