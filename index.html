@@ -7,15 +7,18 @@
   <meta name="description" content="დენტალ ცენტრი — თანამედროვე სტომატოლოგიური კლინიკა უახლესი ევროპული ტექნიკითა და ციფრული ტექნოლოგიებით. თერაპია, იმპლანტაცია, ორთოპედია, ორთოდონტია, ქირურგია და საკუთარი სატექნიკო ლაბორატორია." />
   <link rel="icon" type="image/png" href="assets/logo.png" />
   <link rel="preload" href="assets/fonts/FiraGO-Regular.otf" as="font" type="font/otf" crossorigin />
+  <link rel="preload" href="assets/fonts/FiraGO-SemiBold.otf" as="font" type="font/otf" crossorigin />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+
+  <a href="#main" class="skip-link">გადადით მთავარ შიგთავსზე</a>
 
   <!-- ===== HEADER / NAV ===== -->
   <header class="site-header" id="top">
     <div class="container nav-inner">
       <a href="#top" class="brand" aria-label="დენტალ ცენტრი">
-        <img src="assets/logo.png" alt="დენტალ ცენტრი" class="brand-logo" />
+        <img src="assets/logo-128.png" alt="" class="brand-logo" width="128" height="128" />
         <span class="brand-name">დენტალ <strong>ცენტრი</strong></span>
       </a>
 
@@ -30,14 +33,17 @@
 
       <a href="#contact" class="btn btn-primary nav-cta">ვიზიტზე ჩაწერა</a>
 
-      <button class="burger" id="burger" aria-label="მენიუ" aria-expanded="false">
+      <button class="burger" id="burger" aria-label="მენიუ" aria-expanded="false" aria-controls="navLinks">
         <span></span><span></span><span></span>
       </button>
     </div>
   </header>
 
+  <main id="main">
+
   <!-- ===== HERO ===== -->
   <section class="hero" id="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
     <div class="container hero-inner">
       <div class="hero-copy reveal">
         <span class="eyebrow">2015 წლიდან</span>
@@ -59,10 +65,12 @@
       </div>
 
       <div class="hero-media reveal">
-        <img src="assets/hero-clinic.jpg"
-             alt="დენტალ ცენტრის სამკურნალო კაბინეტი" class="hero-img" loading="eager" fetchpriority="high" />
+        <div class="hero-frame">
+          <img src="assets/hero-clinic.jpg"
+               alt="დენტალ ცენტრის სამკურნალო კაბინეტი" class="hero-img" width="1600" height="900" loading="eager" fetchpriority="high" />
+        </div>
         <div class="hero-badge">
-          <span class="dot"></span>
+          <span class="dot" aria-hidden="true"></span>
           <div>
             <strong>საკუთარი სატექნიკო ლაბორატორია</strong>
             <small>Art Dental Studios — ადგილზე</small>
@@ -83,42 +91,90 @@
 
       <div class="grid services-grid">
         <article class="card service-card reveal">
-          <div class="ico">🦷</div>
+          <span class="ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5.6c-1.4-1.2-3-1.8-4.6-1.4C5.2 4.7 4 6.7 4 9c0 2 .5 3.4 1 5.2.4 1.4.6 3 .8 4.4.2 1.2.9 1.9 1.8 1.9.8 0 1.4-.6 1.7-1.7l.9-3.3c.2-.8.6-1.2 1.8-1.2s1.6.4 1.8 1.2l.9 3.3c.3 1.1.9 1.7 1.7 1.7.9 0 1.6-.7 1.8-1.9.2-1.4.4-3 .8-4.4.5-1.8 1-3.2 1-5.2 0-2.3-1.2-4.3-3.4-4.8-1.6-.4-3.2.2-4.6 1.4Z"/>
+            </svg>
+          </span>
           <h3>თერაპია</h3>
           <p>კარიესის მკურნალობა, ბჟენი და ენდოდონტია თანამედროვე მასალებითა და პროტოკოლებით.</p>
         </article>
+
         <article class="card service-card reveal">
-          <div class="ico">🧒</div>
+          <span class="ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"/><path d="M8.5 14.2s1.3 1.8 3.5 1.8 3.5-1.8 3.5-1.8"/>
+              <path d="M9 9.5h.01"/><path d="M15 9.5h.01"/>
+            </svg>
+          </span>
           <h3>ბავშვთა თერაპია</h3>
           <p>ნაზი და მეგობრული მიდგომა პატარა პაციენტებისთვის — ვიზიტი შიშის გარეშე.</p>
         </article>
+
         <article class="card service-card reveal">
-          <div class="ico">👑</div>
+          <span class="ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 7.5l4 3.2 5-6.2 5 6.2 4-3.2-2 10H5z"/><path d="M5.5 21h13"/>
+            </svg>
+          </span>
           <h3>ორთოპედია</h3>
           <p>გვირგვინები, ვინირები და პროთეზირება ციფრული დაგეგმვით და საკუთარ ლაბორატორიასთან ერთად.</p>
         </article>
+
         <article class="card service-card reveal">
-          <div class="ico">😁</div>
+          <span class="ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2.8 12h18.4"/>
+              <rect x="4.4" y="9.2" width="4.2" height="5.6" rx="1.3"/>
+              <rect x="9.9" y="9.2" width="4.2" height="5.6" rx="1.3"/>
+              <rect x="15.4" y="9.2" width="4.2" height="5.6" rx="1.3"/>
+            </svg>
+          </span>
           <h3>ორთოდონტია</h3>
           <p>ბრეკეტები და ელაინერები სწორი თანკბილვისა და ჰარმონიული ღიმილისთვის.</p>
         </article>
+
         <article class="card service-card reveal">
-          <div class="ico">🩺</div>
+          <span class="ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 2.5v2"/><path d="M5 2.5v2"/>
+              <path d="M5 3.5H4a2 2 0 0 0-2 2V9a6 6 0 0 0 12 0V5.5a2 2 0 0 0-2-2h-1"/>
+              <path d="M8 15a6 6 0 0 0 12 0v-2.6"/><circle cx="20" cy="10.4" r="2"/>
+            </svg>
+          </span>
           <h3>ქირურგია</h3>
           <p>კბილის ამოღება, ღრძილისა და პაროდონტის ქირურგიული მკურნალობა უმტკივნეულოდ.</p>
         </article>
+
         <article class="card service-card reveal">
-          <div class="ico">⚙️</div>
+          <span class="ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 3.2h6l-.6 4h-4.8z"/><path d="M9.3 9h5.4"/><path d="M9.7 12h4.6"/>
+              <path d="M10.1 15h3.8"/><path d="M10.6 18h2.8"/><path d="M12 20.8v.6"/>
+            </svg>
+          </span>
           <h3>იმპლანტაცია</h3>
           <p>დაკარგული კბილის ბუნებრივი ჩანაცვლება მსოფლიოში ცნობილი პრემიუმ კლასის საიმპლანტაციო სისტემებით.</p>
         </article>
+
         <article class="card service-card reveal">
-          <div class="ico">✨</div>
+          <span class="ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11.2 3.4a.5.5 0 0 1 .95 0l1.35 4.05a2 2 0 0 0 1.3 1.3l4.05 1.35a.5.5 0 0 1 0 .95l-4.05 1.35a2 2 0 0 0-1.3 1.3l-1.35 4.05a.5.5 0 0 1-.95 0l-1.35-4.05a2 2 0 0 0-1.3-1.3L4.5 11.05a.5.5 0 0 1 0-.95L8.55 8.75a2 2 0 0 0 1.3-1.3z"/>
+              <path d="M19 3.5v3"/><path d="M20.5 5h-3"/><path d="M5.5 17.5v2.5"/><path d="M6.75 18.75h-2.5"/>
+            </svg>
+          </span>
           <h3>ესთეტიკური სტომატოლოგია</h3>
           <p>კბილების თეთრება, ვინირები და ღიმილის დიზაინი — შედეგი, რომელიც ბუნებრივად გამოიყურება.</p>
         </article>
+
         <article class="card service-card reveal">
-          <div class="ico">🔬</div>
+          <span class="ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 2.8v6.6"/><path d="M14 9.4V2.8"/><path d="M8.5 2.8h7"/>
+              <path d="M14 9.4a6.3 6.3 0 1 1-4 0"/><path d="M6 16.4h12"/>
+            </svg>
+          </span>
           <h3>სატექნიკო ლაბორატორია</h3>
           <p>Art Dental Studios — ციფრული დიზაინი და ზუსტი კონსტრუქციები ადგილზე, უშუალოდ ექიმთან კოორდინაციით.</p>
         </article>
@@ -130,7 +186,7 @@
   <section class="section about" id="about">
     <div class="container about-inner">
       <div class="about-media reveal">
-        <img src="assets/hero-clinic.jpg" alt="დენტალ ცენტრის ინტერიერი" loading="lazy" />
+        <img src="assets/hero-clinic.jpg" alt="დენტალ ცენტრის ინტერიერი" width="1600" height="900" loading="lazy" />
       </div>
       <div class="about-copy reveal">
         <span class="eyebrow">ჩვენ შესახებ</span>
@@ -311,27 +367,52 @@
         <p>შეავსეთ ფორმა და ჩვენი ადმინისტრატორი დაგიკავშირდებათ უმოკლეს დროში.</p>
 
         <ul class="contact-list">
-          <li><span class="ci">📍</span> თბილისი, კალოუბნის 22, 0182</li>
           <li>
-            <span class="ci">📞</span>
+            <span class="ci" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 10.2c0 5.6-8 11.6-8 11.6s-8-6-8-11.6a8 8 0 0 1 16 0"/><circle cx="12" cy="10.2" r="2.9"/>
+              </svg>
+            </span>
+            <span>თბილისი, კალოუბნის 22, 0182</span>
+          </li>
+          <li>
+            <span class="ci" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 16.9v2.8a2 2 0 0 1-2.2 2 19.6 19.6 0 0 1-8.5-3 19.3 19.3 0 0 1-6-6 19.6 19.6 0 0 1-3-8.6A2 2 0 0 1 3.8 2h2.9a2 2 0 0 1 2 1.7 12.7 12.7 0 0 0 .7 2.8 2 2 0 0 1-.5 2.1L7.8 9.8a15.8 15.8 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5 12.7 12.7 0 0 0 2.8.7 2 2 0 0 1 1.6 2.1"/>
+              </svg>
+            </span>
             <span class="contact-multi">
               <a href="tel:+995593017373">+995 593 01 73 73</a>
               <a href="tel:+995555717164">+995 555 71 71 64</a>
             </span>
           </li>
-          <li><span class="ci">✉️</span> <a href="mailto:tbilisi.dentalstudio@gmail.com">tbilisi.dentalstudio@gmail.com</a></li>
-          <li><span class="ci">🕐</span> ორშ–შაბ · 10:00 – 19:00</li>
+          <li>
+            <span class="ci" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="19" height="15" x="2.5" y="4.5" rx="2.5"/><path d="m21 7.5-8.4 5.4a2 2 0 0 1-2.2 0L2 7.5"/>
+              </svg>
+            </span>
+            <a href="mailto:tbilisi.dentalstudio@gmail.com">tbilisi.dentalstudio@gmail.com</a>
+          </li>
+          <li>
+            <span class="ci" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"/><path d="M12 6.8V12l3.4 2"/>
+              </svg>
+            </span>
+            <span>ორშ–შაბ · 10:00 – 19:00</span>
+          </li>
         </ul>
       </div>
 
       <form class="card booking-form reveal" id="bookingForm" novalidate>
         <div class="field">
           <label for="name">სახელი და გვარი</label>
-          <input type="text" id="name" name="name" placeholder="თქვენი სახელი" required />
+          <input type="text" id="name" name="name" placeholder="თქვენი სახელი" autocomplete="name" required />
         </div>
         <div class="field">
           <label for="phone">ტელეფონი</label>
-          <input type="tel" id="phone" name="phone" placeholder="+995 5xx xx xx xx" required />
+          <input type="tel" id="phone" name="phone" placeholder="+995 5xx xx xx xx" autocomplete="tel" inputmode="tel" required />
         </div>
         <div class="field">
           <label for="service">სერვისი</label>
@@ -351,16 +432,18 @@
           <textarea id="msg" name="msg" rows="3" placeholder="მოკლედ აღწერეთ თქვენი საკითხი"></textarea>
         </div>
         <button type="submit" class="btn btn-primary btn-block">ჩაწერის გაგზავნა</button>
-        <p class="form-note" id="formNote" hidden></p>
+        <p class="form-note" id="formNote" role="status" aria-live="polite" hidden></p>
       </form>
     </div>
   </section>
+
+  </main>
 
   <!-- ===== FOOTER ===== -->
   <footer class="site-footer">
     <div class="container footer-inner">
       <div class="footer-brand">
-        <img src="assets/logo.png" alt="დენტალ ცენტრი" />
+        <img src="assets/logo-128.png" alt="დენტალ ცენტრი" width="128" height="128" />
         <p>დენტალ ცენტრი — თანამედროვე სტომატოლოგია 2015 წლიდან. საკუთარი სატექნიკო ლაბორატორია Art Dental Studios.</p>
       </div>
       <div class="footer-col">
