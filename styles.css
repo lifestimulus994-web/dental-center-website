@@ -474,9 +474,10 @@ svg{display:block}
 /* ===== FOOTER ===== */
 .site-footer{background:var(--surface-inverse);color:var(--on-inverse-muted);padding-top:var(--sp-16)}
 .footer-inner{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:var(--sp-10);padding-bottom:var(--sp-12)}
+/* the mark is transparent now, so it no longer needs a white plate to
+   sit on over the dark footer */
 .footer-brand img{
-  width:56px;height:56px;object-fit:contain;background:#fff;
-  border-radius:var(--r-md);padding:6px;margin-bottom:var(--sp-4);
+  width:60px;height:60px;object-fit:contain;margin-bottom:var(--sp-4);
 }
 .footer-brand p{max-width:34ch;font-size:14.5px;line-height:1.65}
 .footer-col h4{color:var(--on-inverse);margin-bottom:var(--sp-4);font-size:15px;font-weight:600}
