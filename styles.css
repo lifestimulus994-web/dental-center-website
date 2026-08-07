@@ -491,6 +491,46 @@ svg{display:block}
 .footer-col a:hover{color:var(--accent)}
 .footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding:var(--sp-5) 0;font-size:14px;color:#7fa2be}
 
+.footer-social{margin-top:var(--sp-5)}
+.footer-social a{
+  display:inline-flex;align-items:center;gap:var(--sp-3);
+  min-height:44px;padding:0 var(--sp-4) 0 var(--sp-3);
+  border:1px solid rgba(255,255,255,.16);border-radius:var(--r-full);
+  font-size:14.5px;font-weight:500;color:var(--on-inverse);
+  transition:background-color var(--dur) var(--ease-out),border-color var(--dur) var(--ease-out);
+}
+.footer-social a:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.3)}
+.footer-social svg{width:22px;height:22px;flex:0 0 auto}
+
+/* ===== FLOATING WHATSAPP ===== */
+.fab-whatsapp{
+  position:fixed;z-index:90;
+  inset-inline-end:clamp(16px,2.4vw,28px);
+  bottom:clamp(16px,2.4vw,28px);
+  display:grid;place-items:center;
+  width:58px;height:58px;border-radius:50%;
+  background:#25d366;color:#fff;
+  box-shadow:0 12px 26px -10px rgba(37,211,102,.75),var(--e2);
+  transition:transform var(--dur) var(--ease-out),box-shadow var(--dur) var(--ease-out);
+}
+.fab-whatsapp svg{width:30px;height:30px}
+.fab-whatsapp:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 18px 34px -12px rgba(37,211,102,.8),var(--e3)}
+.fab-whatsapp:active{transform:translateY(0) scale(.98)}
+/* a slow ring so the button reads as live without nagging */
+.fab-whatsapp::after{
+  content:"";position:absolute;inset:0;border-radius:50%;
+  border:2px solid rgba(37,211,102,.55);
+  animation:fab-ping 2.8s cubic-bezier(.2,.6,.3,1) infinite;
+}
+@keyframes fab-ping{
+  0%{transform:scale(1);opacity:.7}
+  70%,100%{transform:scale(1.5);opacity:0}
+}
+@media(max-width:760px){
+  .fab-whatsapp{width:54px;height:54px}
+  .fab-whatsapp svg{width:28px;height:28px}
+}
+
 /* ===== REVEAL + STAGGER ===== */
 .reveal{
   opacity:0;transform:translate3d(0,22px,0);
