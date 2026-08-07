@@ -68,9 +68,14 @@ const counterObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.5 });
 counters.forEach(c => counterObserver.observe(c));
 
-// ===== Booking form (fake success) =====
+// ===== Booking form -> WhatsApp =====
+// There is no backend, so the form hands the visitor off to WhatsApp with
+// the message already written. They still have to press send there.
+const WHATSAPP_NUMBER = '995555717164';
+
 const form = document.getElementById('bookingForm');
 const note = document.getElementById('formNote');
+
 form.addEventListener('submit', (ev) => {
   ev.preventDefault();
   const required = form.querySelectorAll('[required]');
@@ -86,15 +91,38 @@ form.addEventListener('submit', (ev) => {
     note.style.background = 'rgba(224,87,107,.1)';
     note.style.color = '#e0576b';
     note.textContent = 'გთხოვთ, შეავსოთ სავალდებულო ველები.';
+    form.querySelector('.invalid')?.focus();
     return;
   }
+
   const name = form.querySelector('#name').value.trim();
+  const phone = form.querySelector('#phone').value.trim();
+  const service = form.querySelector('#service').value.trim();
+  const msg = form.querySelector('#msg').value.trim();
+
+  const lines = [
+    'ვიზიტზე ჩაწერის მოთხოვნა — დენტალ ცენტრი',
+    '',
+    `სახელი: ${name}`,
+    `ტელეფონი: ${phone}`,
+    `სერვისი: ${service}`
+  ];
+  if (msg) lines.push(`შენიშვნა: ${msg}`);
+
+  // opened synchronously inside the submit handler so it is not treated
+  // as a pop-up and blocked
+  window.open(
+    `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join('\n'))}`,
+    '_blank',
+    'noopener'
+  );
+
   form.reset();
   note.hidden = false;
   note.className = 'form-note ok';
   note.style.background = '';
   note.style.color = '';
-  note.textContent = `მადლობა, ${name}! თქვენი მოთხოვნა მიღებულია — მალე დაგიკავშირდებით. ✓`;
+  note.textContent = `მადლობა, ${name}! გახსენით WhatsApp და დააჭირეთ გაგზავნას — შეტყობინება უკვე შევსებულია. ✓`;
 });
 // clear invalid state on input
 form.querySelectorAll('[required]').forEach(f =>
