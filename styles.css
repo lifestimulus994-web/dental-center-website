@@ -182,11 +182,11 @@ svg{display:block}
   display:flex;flex-direction:column;justify-content:space-between;gap:clamp(16px,2.4vh,40px);
 }
 .hero-title{
-  font-size:min(5.9vw,9.4vh,92px);
-  line-height:1.04;font-weight:700;
+  font-size:min(7.1vw,12.4vh,116px);
+  line-height:1.02;font-weight:700;
   color:rgba(23,137,189,.62);
-  -webkit-text-stroke:1px rgba(18,113,157,.34);
-  max-width:15ch;
+  -webkit-text-stroke:1.2px rgba(18,113,157,.34);
+  max-width:17ch;
 }
 .hero-title .hl{color:rgba(18,113,157,.78)}
 
