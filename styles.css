@@ -190,6 +190,9 @@ svg{display:block}
 }
 .hero-title .hl{color:rgba(18,113,157,.78)}
 
+/* phone-only artwork card; on desktop the tooth is the section background */
+.hero-art{display:none}
+
 .hero-cols{
   display:grid;align-items:end;gap:var(--sp-8);
   grid-template-columns:minmax(0,360px) minmax(0,1fr) minmax(0,250px);
@@ -528,25 +531,35 @@ svg{display:block}
   .nav-links a{padding:15px 12px;border-radius:var(--r-sm);font-size:15.5px;border-bottom:1px solid var(--border)}
   .nav-links a:last-child{border-bottom:0}
 
+  /* the photo becomes a card in the flow instead of a cropped backdrop,
+     so the tooth sits right under the headline and there is no seam */
   .hero{
     height:auto;min-height:auto;
-    padding:var(--sp-6) 0 clamp(200px,54vw,300px);
-    background-color:#dceffb;
-    background-size:165% auto;
-    background-position:center bottom;
+    padding:var(--sp-6) 0 var(--sp-10);
+    background:linear-gradient(180deg,#edf7fe 0%,#d8edfb 62%,#cfe8fa 100%);
   }
-  /* fade the cropped photo into the flat colour so the seam is invisible */
-  .hero::before{
-    content:"";position:absolute;inset:0;pointer-events:none;
-    background:linear-gradient(180deg,#dceffb 0%,rgba(220,239,251,.9) 26%,rgba(220,239,251,0) 56%);
-  }
-  .hero-inner{gap:var(--sp-6)}
+  .hero-inner{justify-content:flex-start;gap:var(--sp-5)}
   .hero-title{font-size:clamp(30px,8.4vw,38px);max-width:none;-webkit-text-stroke-width:.6px}
-  .hero .lead{font-size:15px;padding:var(--sp-4) var(--sp-5)}
-  .hero-cta{width:100%;justify-content:space-between;min-height:56px}
-  .hero-stats{gap:var(--sp-3)}
-  .hero-stats strong{font-size:20px}
-  .hero-stats span{font-size:11.5px;line-height:1.35}
+
+  .hero-art{
+    display:block;width:100%;aspect-ratio:3/2;
+    border-radius:var(--r-xl);box-shadow:var(--e3);
+    border:1px solid rgba(255,255,255,.8);
+    background:#d9edfb url("assets/hero-tooth.jpg") no-repeat 65% bottom/190% auto;
+  }
+
+  .hero .lead{font-size:15px;line-height:1.6;padding:var(--sp-4) var(--sp-5)}
+  .hero-cta{width:100%;justify-content:center;gap:var(--sp-3);min-height:56px;padding:0 var(--sp-5)}
+
+  .hero-stats{
+    grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-2);text-align:center;
+    background:rgba(255,255,255,.72);
+    border:1px solid rgba(255,255,255,.9);border-radius:var(--r-lg);
+    padding:var(--sp-4) var(--sp-3);box-shadow:var(--e1);
+  }
+  .hero-stats > div + div{border-inline-start:1px solid rgba(30,159,216,.16)}
+  .hero-stats strong{font-size:19px}
+  .hero-stats span{font-size:11px;line-height:1.3;margin-top:3px}
   .eyebrow{margin-bottom:var(--sp-4);font-size:12.5px;padding:6px 12px}
 
   .services-grid,.doctors-grid,.why-grid{grid-template-columns:1fr}
