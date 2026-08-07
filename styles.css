@@ -332,6 +332,10 @@ svg{display:block}
 }
 .marquee:hover .marquee-track{animation-play-state:paused}
 .marquee img:hover{opacity:1}
+@keyframes tooth-float{
+  0%,100%{transform:translate3d(0,0,0)}
+  50%{transform:translate3d(0,-10px,0)}
+}
 @keyframes marquee-scroll{
   from{transform:translate3d(0,0,0)}
   to{transform:translate3d(-50%,0,0)}
@@ -535,22 +539,40 @@ svg{display:block}
      layout leaves between the headline and the bottom block */
   /* width-driven, never height-driven: iOS browser chrome changes the
      viewport height mid-scroll and was shoving the tooth into the headline */
+  /* The artwork is a flex item that scales to whatever height is left,
+     so the hero always lands on exactly one screen. Its tile is masked
+     to a soft ellipse and the section gradient is sampled from the tile
+     edges, which is what makes the join invisible. */
   .hero{
-    height:220vw;max-height:960px;min-height:0;
+    height:calc(100vh - var(--header-h));
+    height:calc(100svh - var(--header-h));
+    min-height:560px;
     padding:var(--sp-4) 0 var(--sp-5);
-    background:#cfe7fb url("assets/hero-tooth-mobile.jpg") no-repeat center bottom/170% auto;
+    background:linear-gradient(180deg,#eaf6fe 0%,#dcf0fd 26%,#cbe7fc 62%,#b7ddfb 100%);
   }
-  .hero-inner{justify-content:space-between;gap:var(--sp-3)}
+  .hero-inner{justify-content:space-between;gap:0}
+
   .hero-title{
-    font-size:min(10.2vw,42px);max-width:none;
-    color:rgba(20,124,172,.78);-webkit-text-stroke-width:.8px;
+    text-align:center;max-width:none;position:relative;z-index:2;
+    font-size:min(10.4vw,44px);line-height:1.06;
+    color:rgba(14,108,152,.9);-webkit-text-stroke-width:0;
+    text-shadow:0 1px 0 rgba(255,255,255,.5);
   }
 
-  .hero-art{display:none}
+  .hero-art{
+    display:block;flex:1 1 auto;min-height:120px;width:100%;
+    margin:-30px 0 -6px;
+    animation:tooth-float 7s ease-in-out infinite;
+    background:url("assets/hero-tooth-tile.jpg") no-repeat center/cover;
+    -webkit-mask-image:radial-gradient(ellipse closest-side at 50% 50%,#000 42%,rgba(0,0,0,.72) 68%,rgba(0,0,0,0) 100%);
+    mask-image:radial-gradient(ellipse closest-side at 50% 50%,#000 42%,rgba(0,0,0,.72) 68%,rgba(0,0,0,0) 100%);
+  }
 
   .hero-cols{gap:var(--sp-3)}
   .hero-left{gap:var(--sp-3)}
-  .hero .lead{font-size:13.5px;line-height:1.5;padding:var(--sp-3) var(--sp-4)}
+  .hero .lead{
+    font-size:13px;line-height:1.5;padding:var(--sp-3) var(--sp-4);text-align:center;
+  }
   .hero-cta{width:100%;justify-content:center;gap:var(--sp-3);min-height:50px;padding:0 var(--sp-5)}
 
   .hero-stats{
@@ -579,11 +601,10 @@ svg{display:block}
   .marquee img{width:112px;height:42px}
   .marquee-track{animation-duration:28s}
 }
-/* small tablets still get the portrait art, but it must not tower */
 @media(min-width:520px) and (max-width:760px){
-  .hero{height:min(140vw,960px);background-size:120% auto}
-  .hero-title{font-size:min(7.6vw,52px)}
+  .hero-title{font-size:min(7.4vw,52px)}
   .hero .lead{font-size:15px}
+  .hero-art{background-size:auto 100%}
 }
 
 @media(max-width:400px){
