@@ -533,15 +533,18 @@ svg{display:block}
 
   /* portrait artwork made for phones: the tooth sits in the gap the
      layout leaves between the headline and the bottom block */
+  /* width-driven, never height-driven: iOS browser chrome changes the
+     viewport height mid-scroll and was shoving the tooth into the headline */
   .hero{
-    height:calc(100vh - var(--header-h));
-    height:calc(100svh - var(--header-h));
-    min-height:620px;
-    padding:var(--sp-4) 0 var(--sp-4);
-    background:#cfe7fb url("assets/hero-tooth-mobile.jpg") no-repeat 50% bottom/152% auto;
+    height:220vw;max-height:960px;min-height:0;
+    padding:var(--sp-4) 0 var(--sp-5);
+    background:#cfe7fb url("assets/hero-tooth-mobile.jpg") no-repeat center bottom/170% auto;
   }
   .hero-inner{justify-content:space-between;gap:var(--sp-3)}
-  .hero-title{font-size:clamp(29px,8.2vw,37px);max-width:none;-webkit-text-stroke-width:.6px}
+  .hero-title{
+    font-size:min(10.2vw,42px);max-width:none;
+    color:rgba(20,124,172,.78);-webkit-text-stroke-width:.8px;
+  }
 
   .hero-art{display:none}
 
@@ -576,6 +579,13 @@ svg{display:block}
   .marquee img{width:112px;height:42px}
   .marquee-track{animation-duration:28s}
 }
+/* small tablets still get the portrait art, but it must not tower */
+@media(min-width:520px) and (max-width:760px){
+  .hero{height:min(140vw,960px);background-size:120% auto}
+  .hero-title{font-size:min(7.6vw,52px)}
+  .hero .lead{font-size:15px}
+}
+
 @media(max-width:400px){
   .hero-stats{gap:var(--sp-2)}
   .hero-stats strong{font-size:17.5px}
