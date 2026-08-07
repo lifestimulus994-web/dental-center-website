@@ -39,8 +39,8 @@
 
   /* semantic surfaces & text */
   --surface:#ffffff;
-  --surface-2:#eff8fe;
-  --surface-3:#e2f1fd;
+  --surface-2:#e9f4fd;
+  --surface-3:#dcedfb;
   --surface-inverse:#08243d;
   --on-surface:#0d2436;
   --on-surface-muted:#4a6579;
@@ -91,7 +91,7 @@ body{
   font-family:"FiraGO",system-ui,sans-serif;
   font-size:16px;
   color:var(--on-surface);
-  background:var(--surface);
+  background:var(--surface-2);
   line-height:1.6;
   letter-spacing:0;
   -webkit-font-smoothing:antialiased;
@@ -149,13 +149,13 @@ svg{display:block}
 /* ===== HEADER ===== */
 .site-header{
   position:sticky;top:0;z-index:100;
-  background:rgba(255,255,255,.72);
+  background:rgba(233,244,253,.78);
   backdrop-filter:blur(16px) saturate(180%);
   -webkit-backdrop-filter:blur(16px) saturate(180%);
   border-bottom:1px solid transparent;
   transition:border-color var(--dur) var(--ease-out),box-shadow var(--dur) var(--ease-out),background-color var(--dur) var(--ease-out);
 }
-.site-header.scrolled{background:rgba(255,255,255,.88);border-color:var(--border);box-shadow:var(--e1)}
+.site-header.scrolled{background:rgba(233,244,253,.9);border-color:var(--border);box-shadow:var(--e1)}
 .nav-inner{display:flex;align-items:center;gap:var(--sp-6);height:var(--header-h)}
 .brand{display:flex;align-items:center;gap:var(--sp-3);border-radius:var(--r-sm)}
 .brand-logo{width:40px;height:40px;object-fit:contain}
@@ -271,7 +271,7 @@ svg{display:block}
 }
 
 /* ===== SERVICES ===== */
-.services{background:var(--surface)}
+.services{background:var(--surface-2)}
 .services-grid{grid-template-columns:repeat(4,1fr)}
 .service-card{
   position:relative;overflow:hidden;display:flex;flex-direction:column;
@@ -295,7 +295,7 @@ svg{display:block}
 .service-card p{color:var(--on-surface-muted);font-size:14.5px}
 
 /* ===== ABOUT ===== */
-.about{background:var(--surface-2)}
+.about{background:var(--surface-3)}
 .section.about{padding-bottom:0}
 .about-inner{display:grid;grid-template-columns:1fr 1.08fr;gap:var(--sp-16);align-items:center}
 .about-media{position:relative}
@@ -303,8 +303,10 @@ svg{display:block}
   content:"";position:absolute;inset:18px -18px -18px 18px;border-radius:var(--r-xl);
   background:linear-gradient(140deg,rgba(var(--primary-rgb),.16),rgba(127,184,55,.16));
 }
+/* the room photo is portrait (704x955), so it gets a taller frame than a
+   landscape shot would and is anchored to the certificate wall */
 .about-media img{
-  position:relative;width:100%;height:clamp(320px,36vw,470px);object-fit:cover;object-position:58% 30%;
+  position:relative;width:100%;height:clamp(360px,42vw,560px);object-fit:cover;object-position:center 38%;
   border-radius:var(--r-xl);box-shadow:var(--e4);
 }
 .about-copy h2{font-size:clamp(26px,3.2vw,40px);font-weight:700;line-height:1.2;margin:var(--sp-1) 0 var(--sp-4)}
@@ -326,7 +328,9 @@ svg{display:block}
 .about-brands strong{color:var(--on-surface);font-weight:600}
 
 .stats-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-5);margin-top:var(--sp-8)}
-.stat{display:flex;align-items:center;gap:var(--sp-3)}
+/* number over label: side by side the long Georgian labels crowd the
+   figure and the columns start colliding */
+.stat{display:flex;flex-direction:column;align-items:flex-start;gap:var(--sp-2)}
 .stat strong{font-size:38px;font-weight:700;color:var(--primary-700);line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
 .stat strong.stat-static{font-size:31px}
 .stat span{font-size:12.5px;color:var(--on-surface-muted);line-height:1.35}
@@ -360,7 +364,7 @@ svg{display:block}
 }
 
 /* ===== DOCTORS ===== */
-.doctors{background:var(--surface)}
+.doctors{background:var(--surface-2)}
 .doctors-grid{grid-template-columns:repeat(3,1fr);align-items:stretch}
 .doctor-card{
   overflow:hidden;display:flex;flex-direction:column;
@@ -400,7 +404,7 @@ svg{display:block}
 }
 
 /* ===== WHY US ===== */
-.why{background:var(--surface-2)}
+.why{background:var(--surface-3)}
 .why-grid{grid-template-columns:repeat(3,1fr)}
 .why-card{
   position:relative;padding:var(--sp-8) var(--sp-6);overflow:hidden;
@@ -424,7 +428,7 @@ svg{display:block}
 .why-card p{color:var(--on-surface-muted);font-size:15px}
 
 /* ===== CONTACT ===== */
-.contact{background:var(--surface)}
+.contact{background:var(--surface-2)}
 .contact-inner{display:grid;grid-template-columns:1fr 1.02fr;gap:var(--sp-16);align-items:start}
 .contact-info h2{font-size:clamp(26px,3.2vw,40px);font-weight:700;line-height:1.2;margin:var(--sp-1) 0 var(--sp-4)}
 .contact-info p{color:var(--on-surface-muted);font-size:16.5px;max-width:52ch}
@@ -609,7 +613,9 @@ svg{display:block}
 
   .services-grid,.doctors-grid,.why-grid{grid-template-columns:1fr}
   .footer-inner{grid-template-columns:1fr;gap:var(--sp-8)}
-  .about-media img{height:290px}
+  .about-media img{height:340px}
+  .stats-row{gap:var(--sp-4)}
+  .stat span{font-size:12px}
   .doctor-photo{height:330px}
   .doctor-facts li{font-size:13.5px}
   .stats-row{gap:var(--sp-6)}
