@@ -171,15 +171,18 @@ svg{display:block}
 .hero{
   position:relative;overflow:hidden;display:flex;align-items:stretch;
   background:#d9edfb url("assets/hero-tooth.jpg") no-repeat center bottom/cover;
-  padding:clamp(24px,3.4vw,52px) 0 clamp(40px,5vw,72px);
-  min-height:clamp(600px,80vh,880px);
+  padding:clamp(16px,2.4vh,40px) 0 clamp(18px,3vh,48px);
+  /* one screen minus the sticky header — the photo crops from the top */
+  min-height:520px;
+  height:calc(100vh - var(--header-h));
+  height:calc(100svh - var(--header-h));
 }
 .hero-inner{
   position:relative;z-index:1;width:100%;
-  display:flex;flex-direction:column;gap:clamp(20px,3vw,44px);
+  display:flex;flex-direction:column;justify-content:space-between;gap:clamp(16px,2.4vh,40px);
 }
 .hero-title{
-  font-size:clamp(36px,6.3vw,94px);
+  font-size:min(5.9vw,9.4vh,92px);
   line-height:1.04;font-weight:700;
   color:rgba(23,137,189,.62);
   -webkit-text-stroke:1px rgba(18,113,157,.34);
@@ -188,18 +191,22 @@ svg{display:block}
 .hero-title .hl{color:rgba(18,113,157,.78)}
 
 .hero-cols{
-  flex:1;display:grid;align-items:end;gap:var(--sp-8);
+  display:grid;align-items:end;gap:var(--sp-8);
   grid-template-columns:minmax(0,360px) minmax(0,1fr) minmax(0,250px);
 }
-.hero-left{display:flex;flex-direction:column;align-items:flex-start;gap:var(--sp-6)}
+.hero-left{display:flex;flex-direction:column;align-items:flex-start;gap:clamp(12px,2vh,24px)}
 .hero .lead{
-  margin:0;max-width:none;font-size:16px;color:var(--on-surface-muted);
+  margin:0;max-width:none;color:var(--on-surface-muted);
+  font-size:clamp(14px,1.85vh,16px);line-height:1.55;
   background:rgba(255,255,255,.9);
   backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   border:1px solid rgba(255,255,255,.7);border-radius:var(--r-lg);
-  padding:var(--sp-5) var(--sp-6);box-shadow:var(--e2);
+  padding:clamp(14px,2.2vh,22px) clamp(18px,2.6vh,26px);box-shadow:var(--e2);
 }
-.hero-cta{min-height:62px;padding:0 var(--sp-3) 0 var(--sp-6);gap:var(--sp-5);font-size:16px}
+.hero-cta{
+  min-height:clamp(50px,7vh,62px);padding:0 var(--sp-3) 0 var(--sp-6);
+  gap:var(--sp-5);font-size:clamp(15px,1.9vh,16px);
+}
 .btn-arrow{
   display:grid;place-items:center;width:38px;height:38px;flex:0 0 auto;
   border-radius:50%;background:rgba(255,255,255,.22);
@@ -208,12 +215,18 @@ svg{display:block}
 .btn-arrow svg{width:18px;height:18px}
 .hero-cta:hover .btn-arrow{transform:translate3d(2px,-2px,0)}
 
-.hero-stats{grid-column:3;display:grid;gap:clamp(18px,2.4vw,32px)}
+.hero-stats{grid-column:3;display:grid;gap:clamp(14px,2.8vh,32px)}
 .hero-stats strong{
-  display:block;font-size:clamp(26px,2.5vw,34px);font-weight:700;line-height:1.1;
+  display:block;font-size:min(2.5vw,4.2vh,34px);font-weight:700;line-height:1.1;
   color:var(--primary-700);font-variant-numeric:tabular-nums;
 }
-.hero-stats span{display:block;margin-top:2px;font-size:14px;color:#35617b}
+.hero-stats span{display:block;margin-top:2px;font-size:clamp(12.5px,1.7vh,14px);color:#35617b}
+
+/* the tooth is centred in the viewport, not in the container, so on wide
+   screens the hero content spreads wider to stay clear of the splash */
+@media(min-width:1600px){
+  .hero .container{max-width:1520px}
+}
 
 .eyebrow{
   display:inline-flex;align-items:center;
@@ -484,6 +497,8 @@ svg{display:block}
   .nav-cta{display:none}
 }
 @media(max-width:960px){
+  .hero{height:auto;min-height:calc(100svh - var(--header-h));padding-bottom:clamp(40px,6vw,72px)}
+  .hero-title{font-size:min(7.4vw,8vh,64px)}
   .hero-cols{grid-template-columns:1fr;align-items:start;gap:var(--sp-8)}
   .hero-left{align-items:stretch}
   .hero-stats{grid-column:1;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-4)}
@@ -514,8 +529,8 @@ svg{display:block}
   .nav-links a:last-child{border-bottom:0}
 
   .hero{
-    min-height:auto;
-    padding:var(--sp-8) 0 clamp(215px,56vw,320px);
+    height:auto;min-height:auto;
+    padding:var(--sp-6) 0 clamp(200px,54vw,300px);
     background-color:#dceffb;
     background-size:165% auto;
     background-position:center bottom;
