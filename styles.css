@@ -279,9 +279,9 @@ svg{display:block}
   transition:transform var(--dur-slow) var(--ease-out);
 }
 .service-card:hover .service-media img{transform:scale(1.05)}
-.service-body{padding:var(--sp-5) var(--sp-3) 0;display:flex;flex-direction:column;flex:1}
-.service-card h3{font-size:17px;font-weight:600;line-height:1.35;margin-bottom:var(--sp-2)}
-.service-card p{color:var(--on-surface-muted);font-size:14px}
+.service-body{padding:var(--sp-4) var(--sp-3) 0;display:flex;flex-direction:column;flex:1}
+.service-card h3{font-size:16.5px;font-weight:600;line-height:1.3;margin-bottom:6px}
+.service-card p{color:var(--on-surface-muted);font-size:13px;line-height:1.45}
 
 /* ===== ABOUT ===== */
 .about{background:var(--surface-3)}
@@ -596,12 +596,12 @@ svg{display:block}
   .eyebrow{margin-bottom:var(--sp-4);font-size:12.5px;padding:6px 12px}
   .doctors-grid,.why-grid{grid-template-columns:1fr}
   /* services stay two-up: one column makes the arch cards enormous */
-  .services-grid{grid-template-columns:repeat(2,1fr);gap:var(--sp-4)}
+  .services-grid{grid-template-columns:repeat(2,1fr);gap:var(--sp-3)}
   .service-card{padding:var(--sp-2) var(--sp-2) var(--sp-4);border-radius:18px}
-  .service-media{border-radius:52px 52px 12px 12px}
-  .service-body{padding:var(--sp-4) var(--sp-2) 0}
-  .service-card h3{font-size:15px}
-  .service-card p{font-size:13px}
+  .service-media{aspect-ratio:1/1;border-radius:46px 46px 12px 12px}
+  .service-body{padding:var(--sp-3) var(--sp-2) 0}
+  .service-card h3{font-size:14.5px;margin-bottom:4px}
+  .service-card p{font-size:12px;line-height:1.4}
   .footer-inner{grid-template-columns:1fr;gap:var(--sp-8)}
   .about-media img{height:340px}
   .stats-row{gap:var(--sp-4)}
