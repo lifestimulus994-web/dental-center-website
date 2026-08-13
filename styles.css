@@ -596,12 +596,14 @@ svg{display:block}
   .eyebrow{margin-bottom:var(--sp-4);font-size:12.5px;padding:6px 12px}
   .doctors-grid,.why-grid{grid-template-columns:1fr}
   /* services stay two-up: one column makes the arch cards enormous */
-  .services-grid{grid-template-columns:repeat(2,1fr);gap:var(--sp-3)}
-  .service-card{padding:var(--sp-2) var(--sp-2) var(--sp-4);border-radius:18px}
-  .service-media{aspect-ratio:1/1;border-radius:46px 46px 12px 12px}
-  .service-body{padding:var(--sp-3) var(--sp-2) 0}
-  .service-card h3{font-size:14.5px;margin-bottom:4px}
-  .service-card p{font-size:12px;line-height:1.4}
+  /* one full-width card per row, wide photo — matches the reference at
+     narrow widths */
+  .services-grid{grid-template-columns:1fr;gap:var(--sp-4)}
+  .service-card{padding:var(--sp-3) var(--sp-3) var(--sp-5);border-radius:20px}
+  .service-media{aspect-ratio:16/10;border-radius:70px 70px 14px 14px}
+  .service-body{padding:var(--sp-4) var(--sp-2) 0;text-align:center}
+  .service-card h3{font-size:17px;margin-bottom:6px}
+  .service-card p{font-size:13.5px;line-height:1.5}
   .footer-inner{grid-template-columns:1fr;gap:var(--sp-8)}
   .about-media img{height:340px}
   .stats-row{gap:var(--sp-4)}
