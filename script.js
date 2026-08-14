@@ -120,6 +120,15 @@ form.addEventListener('submit', (ev) => {
     'noopener'
   );
 
+  // also logged to Supabase, so a request survives even if the WhatsApp
+  // message gets missed or deleted. Fire-and-forget: never blocks or
+  // fails the WhatsApp handoff, which is the flow that actually matters.
+  if (window.DentalDB && window.DentalDB.isConfigured) {
+    window.DentalDB.client.from('booking_requests').insert({
+      name, phone, service, note: msg || null
+    }).then(({ error }) => { if (error) console.error('booking log failed:', error); });
+  }
+
   form.reset();
   note.hidden = false;
   note.className = 'form-note ok';

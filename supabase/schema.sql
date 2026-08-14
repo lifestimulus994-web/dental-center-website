@@ -52,14 +52,28 @@ create table if not exists doctor_results (
   created_at timestamptz not null default now()
 );
 
+-- ჯავშნის ფორმის ყოველი გაგზავნის ასლი — WhatsApp-ის გარდა, აქაც რჩება,
+-- რომ თუ შეტყობინება WhatsApp-ში გამოგრჩათ ან წაიშალა, პაციენტი არ დაიკარგოს.
+create table if not exists booking_requests (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  phone text not null,
+  service text,
+  note text,
+  created_at timestamptz not null default now()
+);
+
 -- ============ ROW LEVEL SECURITY ============
 -- ყველას შეუძლია წაკითხვა (საიტი საჯაროა).
 -- მხოლოდ ავტორიზებულ (ადმინ) მომხმარებელს შეუძლია ჩაწერა/რედაქტირება/წაშლა.
+-- booking_requests პირიქითაა: ნებისმიერს (საიტის სტუმარს) შეუძლია ახალი
+-- განაცხადის დამატება, მაგრამ მხოლოდ ადმინს შეუძლია მათი ნახვა/წაშლა.
 
 alter table doctors enable row level security;
 alter table site_images enable row level security;
 alter table doctor_photos enable row level security;
 alter table doctor_results enable row level security;
+alter table booking_requests enable row level security;
 
 drop policy if exists "public read doctors" on doctors;
 create policy "public read doctors" on doctors for select using (true);
@@ -81,6 +95,16 @@ create policy "public read doctor_results" on doctor_results for select using (t
 drop policy if exists "admin write doctor_results" on doctor_results;
 create policy "admin write doctor_results" on doctor_results for all
   using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
+
+drop policy if exists "public insert booking_requests" on booking_requests;
+create policy "public insert booking_requests" on booking_requests for insert
+  with check (true);
+drop policy if exists "admin read booking_requests" on booking_requests;
+create policy "admin read booking_requests" on booking_requests for select
+  using (auth.role() = 'authenticated');
+drop policy if exists "admin delete booking_requests" on booking_requests;
+create policy "admin delete booking_requests" on booking_requests for delete
+  using (auth.role() = 'authenticated');
 
 -- ============ STORAGE ============
 -- ერთი საჯარო bucket ყველა ატვირთული ფოტოსთვის.

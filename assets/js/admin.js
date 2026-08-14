@@ -49,6 +49,15 @@
   let activeDoctor = 'galaktion';
   let activeSubtab = 'gallery';
 
+  // booking_requests accepts public inserts (anyone can POST to it, not
+  // just the site's own form), so its contents are untrusted input and
+  // must never go into innerHTML unescaped
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str == null ? '' : String(str);
+    return div.innerHTML;
+  }
+
   function toast(msg) {
     toastEl.textContent = msg;
     toastEl.classList.add('show');
@@ -91,7 +100,17 @@
   });
 
   // ===== STORAGE UPLOAD HELPER =====
+  const MAX_FILE_BYTES = 5 * 1024 * 1024; // 5MB — a phone photo straight off
+  // the camera can be 15-20MB and would slow the site down for every visitor
+
   async function uploadFile(file, folder) {
+    if (!file.type.startsWith('image/')) {
+      throw new Error('მხოლოდ ფოტოს ატვირთვაა შესაძლებელი.');
+    }
+    if (file.size > MAX_FILE_BYTES) {
+      const mb = (file.size / (1024 * 1024)).toFixed(1);
+      throw new Error(`ფოტო ძალიან დიდია (${mb}MB). მაქსიმუმ 5MB დაშვებულია — შეამცირეთ ზომა და სცადეთ თავიდან.`);
+    }
     const ext = file.name.split('.').pop();
     const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
     const { error } = await db.client.storage.from(db.bucket).upload(path, file, { upsert: false });
@@ -280,7 +299,50 @@
     });
   }
 
+  // ===== BOOKING REQUESTS =====
+  async function loadRequests() {
+    const list = document.getElementById('requestsList');
+    list.innerHTML = '<p class="hint">იტვირთება...</p>';
+
+    const { data, error } = await db.client
+      .from('booking_requests')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) { list.innerHTML = `<p class="hint">შეცდომა: ${error.message}</p>`; return; }
+    const rows = data || [];
+    if (!rows.length) {
+      list.innerHTML = '<p class="requests-empty">ჯერ არცერთი განაცხადი არ შემოსულა.</p>';
+      return;
+    }
+
+    list.innerHTML = rows.map((r) => {
+      const when = new Date(r.created_at).toLocaleString('ka-GE', {
+        day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+      });
+      return `
+        <div class="card request-card" data-id="${r.id}">
+          <div class="info">
+            <div class="name">${escapeHtml(r.name)} · <a href="tel:${escapeHtml(r.phone)}">${escapeHtml(r.phone)}</a></div>
+            <div class="meta">${escapeHtml(r.service || '—')}</div>
+            ${r.note ? `<div class="note">${escapeHtml(r.note)}</div>` : ''}
+          </div>
+          <div class="time">${escapeHtml(when)}</div>
+          <button type="button" class="btn btn-danger btn-sm" data-action="handled">დამუშავებულია</button>
+        </div>`;
+    }).join('');
+
+    list.querySelectorAll('[data-action="handled"]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const id = btn.closest('[data-id]').dataset.id;
+        await db.client.from('booking_requests').delete().eq('id', id);
+        loadRequests();
+      });
+    });
+  }
+
   function boot() {
+    loadRequests();
     renderServiceSlots();
     loadSlots();
     renderDoctorTabs();
