@@ -204,9 +204,12 @@ svg{display:block}
   gap:var(--sp-8) var(--sp-16);
   align-items:center;
 }
-.hero-copy{grid-area:copy}
-.hero-stats{grid-area:stats}
-.hero-media{grid-area:media}
+/* grid items default to min-width:auto, which lets a wide descendant
+   (two nowrap buttons side by side, at narrow widths) stretch the
+   whole track past the viewport instead of wrapping inside it */
+.hero-copy{grid-area:copy;min-width:0}
+.hero-stats{grid-area:stats;min-width:0}
+.hero-media{grid-area:media;min-width:0}
 
 .hero h1{font-size:clamp(34px,4.6vw,58px);line-height:1.1;font-weight:700}
 .hero h1 .hl{color:var(--primary-700)}
@@ -214,7 +217,7 @@ svg{display:block}
 .hero-actions{display:flex;gap:var(--sp-3);flex-wrap:wrap}
 
 .hero-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-5);max-width:520px}
-.hero-stat{position:relative;padding-inline-start:var(--sp-4)}
+.hero-stat{position:relative;padding-inline-start:var(--sp-4);min-width:0}
 .hero-stat::before{
   content:"";position:absolute;inset-inline-start:0;top:4px;bottom:4px;width:3px;border-radius:2px;
   background:linear-gradient(180deg,var(--primary),var(--accent));
@@ -222,7 +225,7 @@ svg{display:block}
 .hero-stat-icon{display:none}
 .hero-stats strong{display:block;font-size:27px;font-weight:700;line-height:1.15;font-variant-numeric:tabular-nums;white-space:nowrap}
 .hero-stats strong.stat-static{font-size:23px}
-.hero-stats span{font-size:13px;color:var(--on-surface-muted)}
+.hero-stats span{font-size:13px;color:var(--on-surface-muted);overflow-wrap:break-word}
 
 .hero-media{position:relative}
 .hero-frame{
@@ -335,7 +338,8 @@ svg{display:block}
    figure and the columns start colliding */
 .stat{display:flex;flex-direction:column;align-items:flex-start;gap:var(--sp-2)}
 .stat strong{font-size:38px;font-weight:700;color:var(--primary-700);line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
-.stat span{font-size:12.5px;color:var(--on-surface-muted);line-height:1.35}
+.stat span{font-size:12.5px;color:var(--on-surface-muted);line-height:1.35;overflow-wrap:break-word}
+.stat{min-width:0}
 
 /* ===== BRAND MARQUEE ===== */
 .brand-strip{margin-top:clamp(56px,7vw,84px);background:var(--surface-inverse);padding:var(--sp-8) 0;overflow:hidden}
@@ -612,8 +616,11 @@ svg{display:block}
   .hero-copy{padding:0 var(--sp-1)}
   .hero h1{font-size:clamp(30px,8.2vw,38px);line-height:1.18}
   .hero .lead{margin:var(--sp-4) 0 var(--sp-6);font-size:15.5px}
-  .hero-actions{gap:var(--sp-2);flex-wrap:nowrap}
-  .hero-actions .btn{flex:1;min-height:46px;padding:0 var(--sp-4);font-size:14px}
+  /* wrap, not nowrap: below ~340px two full-text pill buttons cannot
+     both fit on one line without spilling past the edge, so let the
+     second one drop to its own line instead of overflowing */
+  .hero-actions{gap:var(--sp-2);flex-wrap:wrap}
+  .hero-actions .btn{flex:1;min-width:0;min-height:46px;padding:0 var(--sp-4);font-size:14px}
 
   /* the stats were three cramped columns with wrapping labels — now an
      elevated card with an icon chip per stat and real dividers */
@@ -658,12 +665,15 @@ svg{display:block}
   .service-card p{font-size:13.5px;line-height:1.5}
   .footer-inner{grid-template-columns:1fr;gap:var(--sp-8)}
   .about-media img{height:340px}
-  .stats-row{gap:var(--sp-4)}
-  .stat span{font-size:12px}
   .doctor-photo{height:330px}
   .doctor-facts li{font-size:13.5px}
+  /* "15 000+" is the widest of the three and was landing flush against
+     the next column with zero clearance at common phone widths — same
+     font-size everywhere (per the client), just small enough that the
+     widest one has real breathing room, not just a technical non-overlap */
   .stats-row{gap:var(--sp-6)}
-  .stat strong{font-size:32px}
+  .stat span{font-size:12px}
+  .stat strong{font-size:25px}
   .booking-form{padding:var(--sp-6)}
   .brand-strip{padding:var(--sp-6) 0}
   .marquee-group{gap:38px;padding-inline-end:38px}
