@@ -365,27 +365,24 @@ svg{display:block}
 .doctors{background:var(--surface-2)}
 .doctors-grid{grid-template-columns:repeat(3,1fr);align-items:stretch}
 .doctor-card{
-  overflow:hidden;display:flex;flex-direction:column;
+  display:flex;flex-direction:column;
   transition:transform var(--dur) var(--ease-out),box-shadow var(--dur) var(--ease-out),border-color var(--dur) var(--ease-out);
 }
 .doctor-card:hover{transform:translateY(-4px);box-shadow:var(--e3);border-color:var(--primary-100)}
-.doctor-photo{
-  position:relative;height:340px;width:100%;
-  background-color:var(--surface-3);background-repeat:no-repeat;flex:0 0 auto;
-}
-.doctor-photo::after{
-  content:"";position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(13,36,54,0) 66%,rgba(13,36,54,.22) 100%);
-}
-/* face-first crops — tuned per photo */
-.photo-galaktion{background-image:url("assets/doctor-galaktion.jpg");background-size:120%;background-position:55% 6%}
-.photo-beka{background-image:url("assets/doctor-beka.jpg");background-size:135%;background-position:74% 18%}
-.photo-lika{background-image:url("assets/doctor-lika.jpg");background-size:195%;background-position:44% 34%}
 
 .doctor-body{padding:var(--sp-6);display:flex;flex-direction:column;flex:1}
+.doctor-header{display:flex;align-items:center;gap:var(--sp-4);margin-bottom:var(--sp-5)}
+/* no photos — an initials chip stands in, same gradient language as
+   the icon chips used across services/contact/hero-stats */
+.doctor-avatar{
+  display:grid;place-items:center;flex:0 0 auto;width:60px;height:60px;
+  border-radius:50%;background:linear-gradient(150deg,var(--primary-50),var(--accent-100));
+  color:var(--primary-700);font-size:19px;font-weight:700;
+  border:1px solid rgba(var(--primary-rgb),.14);
+}
 .doctor-body h3{font-size:19px;font-weight:600;line-height:1.3}
 .doctor-body .role{
-  display:inline-flex;align-self:flex-start;margin-top:var(--sp-2);
+  display:inline-flex;margin-top:6px;
   padding:5px 11px;border-radius:var(--r-full);
   background:var(--primary-50);color:var(--primary-700);
   font-size:13px;font-weight:600;line-height:1.35;
@@ -660,7 +657,7 @@ svg{display:block}
   .about-media img{height:340px}
   .stats-row{gap:var(--sp-4)}
   .stat span{font-size:12px}
-  .doctor-photo{height:330px}
+  .doctor-avatar{width:52px;height:52px;font-size:17px}
   .doctor-facts li{font-size:13.5px}
   .stats-row{gap:var(--sp-6)}
   .stat strong{font-size:32px}
