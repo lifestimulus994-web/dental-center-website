@@ -31,6 +31,9 @@ const revealObserver = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.12 });
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+// exposed so site-content.js can observe elements it injects after this
+// script runs (e.g. the results section, populated from Supabase)
+window.__revealObserver = revealObserver;
 
 // ===== Active nav link on scroll =====
 const sections = [...document.querySelectorAll('section[id]')];

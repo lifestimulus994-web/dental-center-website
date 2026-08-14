@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>ადმინ პანელი — დენტალ ცენტრი</title>
+  <link rel="icon" type="image/png" href="assets/logo-mark-256.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* .btn{display:inline-flex} in styles.css beats the browser's native
+       [hidden]{display:none} at equal specificity — without this, a
+       hidden .btn (like #logoutBtn before login) still renders */
+    [hidden]{display:none !important}
+
+    /* ადმინ პანელის საკუთარი განლაგება — საჯარო styles.css-ის
+       ტოკენებზეა აწყობილი (ფერები, შრიფტი, radius, shadow), რომ
+       დიზაინი დენტალ ცენტრის საიტს ერგებოდეს დამატებითი დუბლირების
+       გარეშე. */
+    body{background:var(--surface-2)}
+    .admin-header{
+      position:sticky;top:0;z-index:10;background:var(--surface);
+      border-bottom:1px solid var(--border);padding:var(--sp-4) 0;
+    }
+    .admin-header .row{
+      display:flex;align-items:center;justify-content:space-between;gap:var(--sp-4);
+    }
+    .admin-brand{display:flex;align-items:center;gap:var(--sp-3);font-weight:700;font-size:17px}
+    .admin-brand img{width:32px;height:32px}
+    .admin-wrap{max-width:920px;margin:0 auto;padding:var(--sp-8) var(--sp-6) var(--sp-16)}
+
+    #loginView{min-height:80vh;display:flex;align-items:center;justify-content:center}
+    .login-card{width:100%;max-width:380px;padding:var(--sp-8);text-align:center}
+    .login-card img{width:56px;height:56px;margin:0 auto var(--sp-4)}
+    .login-card h1{font-size:20px;margin-bottom:var(--sp-6)}
+    .login-card .field{text-align:left}
+    #loginError{
+      display:none;margin-top:var(--sp-3);padding:var(--sp-3);border-radius:var(--r-md);
+      background:rgba(217,74,95,.1);color:var(--danger);font-size:14px;text-align:left;
+    }
+
+    .admin-section{margin-bottom:var(--sp-10)}
+    .admin-section h2{font-size:18px;margin-bottom:var(--sp-2)}
+    .admin-section .hint{color:var(--on-surface-muted);font-size:14px;margin-bottom:var(--sp-5)}
+
+    .slot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:var(--sp-4)}
+    .slot-card{padding:var(--sp-4)}
+    .slot-card .thumb{
+      width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--r-md);
+      background:var(--surface-3);margin-bottom:var(--sp-3);
+    }
+    .slot-card .label{font-size:14px;font-weight:600;margin-bottom:var(--sp-3)}
+    .slot-card .actions{display:flex;gap:var(--sp-2);flex-wrap:wrap}
+    .slot-card input[type="file"]{display:none}
+    .slot-card .status{font-size:12.5px;color:var(--on-surface-muted);margin-top:var(--sp-2)}
+
+    .btn-sm{min-height:36px;padding:0 var(--sp-4);font-size:13px}
+    .btn-danger{background:var(--surface);color:var(--danger);border:1.5px solid rgba(217,74,95,.35)}
+    .btn-danger:hover{background:rgba(217,74,95,.08)}
+
+    .doctor-tabs{display:flex;gap:var(--sp-2);margin-bottom:var(--sp-6);flex-wrap:wrap}
+    .doctor-tab{
+      padding:9px 16px;border-radius:var(--r-full);border:1.5px solid var(--border-strong);
+      background:var(--surface);cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;
+    }
+    .doctor-tab.is-active{background:var(--primary-700);border-color:var(--primary-700);color:#fff}
+
+    .subtab-row{display:flex;gap:var(--sp-2);margin-bottom:var(--sp-5)}
+    .subtab{
+      padding:7px 14px;border-radius:var(--r-full);border:1px solid var(--border);
+      background:var(--surface-2);cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;
+      color:var(--on-surface-muted);
+    }
+    .subtab.is-active{background:var(--accent-100);border-color:rgba(127,184,55,.3);color:var(--accent-600)}
+
+    .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:var(--sp-4)}
+    .gallery-item{padding:var(--sp-3)}
+    .gallery-item img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:var(--r-md);margin-bottom:var(--sp-2)}
+    .gallery-item .order-row{display:flex;gap:6px;margin-bottom:6px}
+    .gallery-item .order-row button{flex:1;min-height:30px;padding:0;font-size:12px}
+    .gallery-item textarea{
+      width:100%;min-height:44px;padding:8px;border:1px solid var(--border-strong);border-radius:var(--r-sm);
+      font-family:inherit;font-size:12.5px;resize:vertical;margin-bottom:6px;
+    }
+    .add-card{
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--sp-2);
+      padding:var(--sp-4);min-height:160px;border:2px dashed var(--border-strong);border-radius:var(--r-lg);
+      cursor:pointer;color:var(--on-surface-muted);font-size:13px;font-weight:600;text-align:center;
+    }
+    .add-card:hover{border-color:var(--primary-300);color:var(--primary-700)}
+    .add-card svg{width:26px;height:26px}
+    .add-card input{display:none}
+
+    .toast{
+      position:fixed;left:50%;bottom:24px;transform:translate(-50%,0);z-index:100;
+      background:var(--surface-inverse);color:var(--on-inverse);padding:12px 20px;border-radius:var(--r-full);
+      font-size:14px;box-shadow:var(--e3);opacity:0;pointer-events:none;transition:opacity .25s ease;
+    }
+    .toast.show{opacity:1}
+  </style>
+</head>
+<body>
+
+  <header class="admin-header">
+    <div class="container row">
+      <div class="admin-brand">
+        <img src="assets/logo-mark-256.png" alt="" />
+        <span>ადმინ პანელი</span>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="logoutBtn" hidden>გასვლა</button>
+    </div>
+  </header>
+
+  <!-- ===== LOGIN ===== -->
+  <div id="loginView">
+    <form class="card login-card" id="loginForm">
+      <img src="assets/logo-mark-256.png" alt="" />
+      <h1>დენტალ ცენტრი — ადმინი</h1>
+      <div class="field">
+        <label for="email">ელფოსტა</label>
+        <input type="email" id="email" name="email" autocomplete="username" required />
+      </div>
+      <div class="field">
+        <label for="password">პაროლი</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" required />
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">შესვლა</button>
+      <p id="loginError"></p>
+    </form>
+  </div>
+
+  <!-- ===== DASHBOARD ===== -->
+  <div class="admin-wrap" id="dashboard" hidden>
+
+    <section class="admin-section">
+      <h2>ჰერო და „ჩვენ შესახებ"</h2>
+      <p class="hint">თუ ფოტო არ აიტვირთება, საიტზე საიტის ჩაშენებული ნაგულისხმევი ფოტო გამოჩნდება.</p>
+      <div class="slot-grid">
+        <div class="card slot-card" data-slot="hero">
+          <img class="thumb" alt="" />
+          <div class="label">ჰეროს ფოტო</div>
+          <div class="actions">
+            <label class="btn btn-primary btn-sm">ატვირთვა<input type="file" accept="image/*" /></label>
+            <button type="button" class="btn btn-danger btn-sm" data-action="reset">ნაგულისხმევზე</button>
+          </div>
+          <div class="status"></div>
+        </div>
+        <div class="card slot-card" data-slot="about">
+          <img class="thumb" alt="" />
+          <div class="label">„ჩვენ შესახებ" ფოტო</div>
+          <div class="actions">
+            <label class="btn btn-primary btn-sm">ატვირთვა<input type="file" accept="image/*" /></label>
+            <button type="button" class="btn btn-danger btn-sm" data-action="reset">ნაგულისხმევზე</button>
+          </div>
+          <div class="status"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="admin-section">
+      <h2>სერვისების ფოტოები</h2>
+      <p class="hint">თითოეული ბარათის ფოტო ცალ-ცალკე იცვლება.</p>
+      <div class="slot-grid" id="servicesGrid"></div>
+    </section>
+
+    <section class="admin-section">
+      <h2>ექიმები</h2>
+      <p class="hint">გალერეა — ფოტოების სლაიდი საიტზე (ავტომატურად იცვლება). შედეგები — ცალკე სექცია საიტზე, სადაც ექიმი თავის ნამუშევრებს აჩვენებს.</p>
+      <div class="doctor-tabs" id="doctorTabs"></div>
+      <div class="subtab-row">
+        <button type="button" class="subtab is-active" data-subtab="gallery">გალერეა (სლაიდი)</button>
+        <button type="button" class="subtab" data-subtab="results">შედეგები</button>
+      </div>
+      <div class="gallery-grid" id="doctorGrid"></div>
+    </section>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="assets/js/supabase-client.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>
