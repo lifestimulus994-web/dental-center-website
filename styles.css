@@ -195,9 +195,8 @@ svg{display:block}
     radial-gradient(40% 40% at 60% 82%,rgba(var(--primary-rgb),.10),transparent 65%);
 }
 /* named areas (not just source order) so the mobile media query can
-   reflow photo → stats → copy without touching the DOM: the h1 stays
-   first in the document for screen readers and SEO regardless of what
-   a phone shows first visually */
+   restack into a single column — headline, then photo, then stats —
+   without touching the DOM order */
 .hero-inner{
   display:grid;
   grid-template-columns:1.02fr .98fr;
@@ -336,7 +335,6 @@ svg{display:block}
    figure and the columns start colliding */
 .stat{display:flex;flex-direction:column;align-items:flex-start;gap:var(--sp-2)}
 .stat strong{font-size:38px;font-weight:700;color:var(--primary-700);line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
-.stat strong.stat-static{font-size:31px}
 .stat span{font-size:12.5px;color:var(--on-surface-muted);line-height:1.35}
 
 /* ===== BRAND MARQUEE ===== */
@@ -550,9 +548,9 @@ svg{display:block}
    pitch on a phone) rather than DOM order, so explicit selectors
    instead of nth-child — same staggerChildren idea as Motion, just
    expressed as fixed per-element delays since this isn't React */
-.hero-media.reveal{transition-delay:0ms}
-.hero-stats.reveal{transition-delay:90ms}
-.hero-copy.reveal{transition-delay:170ms}
+.hero-copy.reveal{transition-delay:0ms}
+.hero-media.reveal{transition-delay:90ms}
+.hero-stats.reveal{transition-delay:170ms}
 
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
@@ -576,9 +574,9 @@ svg{display:block}
 }
 @media(max-width:960px){
   .hero-inner,.about-inner,.contact-inner{grid-template-columns:1fr;gap:var(--sp-10)}
-  /* tablet keeps the original reading order — only phones (<=760px)
-     get the photo-first layout requested below */
-  .hero-inner{grid-template-areas:"copy" "stats" "media"}
+  /* headline first, then the photo, then the stats — same order the
+     phone breakpoint below uses */
+  .hero-inner{grid-template-areas:"copy" "media" "stats"}
   .hero-stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-4)}
   .hero-stats strong{font-size:24px}
   .hero-stats span{font-size:12.5px}
@@ -607,12 +605,10 @@ svg{display:block}
   .nav-links a{padding:15px 12px;border-radius:var(--r-sm);font-size:15.5px;border-bottom:1px solid var(--border)}
   .nav-links a:last-child{border-bottom:0}
 
-  .hero{padding:0 0 var(--sp-16)}
-  /* photo leads on a phone, then the stats card, then the pitch —
-     requested order. The h1 stays first in the DOM (see .hero-inner
-     grid-template-areas above) so screen readers still meet the
-     headline before the image. */
-  .hero-inner{grid-template-areas:"media" "stats" "copy";row-gap:var(--sp-6)}
+  .hero{padding:var(--sp-10) 0 var(--sp-16)}
+  /* headline and CTA lead, then the photo, then the stats card —
+     matches the desktop reading order, just stacked. */
+  .hero-inner{grid-template-areas:"copy" "media" "stats";row-gap:var(--sp-6)}
   .hero-copy{padding:0 var(--sp-1)}
   .hero h1{font-size:clamp(30px,8.2vw,38px);line-height:1.18}
   .hero .lead{margin:var(--sp-4) 0 var(--sp-6);font-size:15.5px}
@@ -668,7 +664,6 @@ svg{display:block}
   .doctor-facts li{font-size:13.5px}
   .stats-row{gap:var(--sp-6)}
   .stat strong{font-size:32px}
-  .stat strong.stat-static{font-size:27px}
   .booking-form{padding:var(--sp-6)}
   .brand-strip{padding:var(--sp-6) 0}
   .marquee-group{gap:38px;padding-inline-end:38px}
