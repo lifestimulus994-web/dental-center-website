@@ -194,20 +194,35 @@ svg{display:block}
     radial-gradient(52% 46% at 10% 4%,rgba(var(--primary-rgb),.22),transparent 60%),
     radial-gradient(40% 40% at 60% 82%,rgba(var(--primary-rgb),.10),transparent 65%);
 }
-.hero-inner{display:grid;grid-template-columns:1.02fr .98fr;gap:var(--sp-16);align-items:center}
+/* named areas (not just source order) so the mobile media query can
+   reflow photo → stats → copy without touching the DOM: the h1 stays
+   first in the document for screen readers and SEO regardless of what
+   a phone shows first visually */
+.hero-inner{
+  display:grid;
+  grid-template-columns:1.02fr .98fr;
+  grid-template-areas:"copy media" "stats media";
+  gap:var(--sp-8) var(--sp-16);
+  align-items:center;
+}
+.hero-copy{grid-area:copy}
+.hero-stats{grid-area:stats}
+.hero-media{grid-area:media}
 
 .hero h1{font-size:clamp(34px,4.6vw,58px);line-height:1.1;font-weight:700}
 .hero h1 .hl{color:var(--primary-700)}
 .hero .lead{margin:var(--sp-5) 0 var(--sp-8);font-size:17.5px;color:var(--on-surface-muted);max-width:52ch}
 .hero-actions{display:flex;gap:var(--sp-3);flex-wrap:wrap}
 
-.hero-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-5);margin-top:var(--sp-12);max-width:520px}
-.hero-stats > div{position:relative;padding-inline-start:var(--sp-4)}
-.hero-stats > div::before{
+.hero-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-5);max-width:520px}
+.hero-stat{position:relative;padding-inline-start:var(--sp-4)}
+.hero-stat::before{
   content:"";position:absolute;inset-inline-start:0;top:4px;bottom:4px;width:3px;border-radius:2px;
   background:linear-gradient(180deg,var(--primary),var(--accent));
 }
+.hero-stat-icon{display:none}
 .hero-stats strong{display:block;font-size:27px;font-weight:700;line-height:1.15;font-variant-numeric:tabular-nums;white-space:nowrap}
+.hero-stats strong.stat-static{font-size:23px}
 .hero-stats span{font-size:13px;color:var(--on-surface-muted)}
 
 .hero-media{position:relative}
@@ -531,6 +546,14 @@ svg{display:block}
 .grid > .reveal:nth-child(7){transition-delay:180ms}
 .grid > .reveal:nth-child(8){transition-delay:240ms}
 
+/* hero cascade follows the VISUAL order (photo, then stats, then the
+   pitch on a phone) rather than DOM order, so explicit selectors
+   instead of nth-child — same staggerChildren idea as Motion, just
+   expressed as fixed per-element delays since this isn't React */
+.hero-media.reveal{transition-delay:0ms}
+.hero-stats.reveal{transition-delay:90ms}
+.hero-copy.reveal{transition-delay:170ms}
+
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
   .reveal{opacity:1;transform:none}
@@ -553,6 +576,9 @@ svg{display:block}
 }
 @media(max-width:960px){
   .hero-inner,.about-inner,.contact-inner{grid-template-columns:1fr;gap:var(--sp-10)}
+  /* tablet keeps the original reading order — only phones (<=760px)
+     get the photo-first layout requested below */
+  .hero-inner{grid-template-areas:"copy" "stats" "media"}
   .hero-stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-4)}
   .hero-stats strong{font-size:24px}
   .hero-stats span{font-size:12.5px}
@@ -581,18 +607,48 @@ svg{display:block}
   .nav-links a{padding:15px 12px;border-radius:var(--r-sm);font-size:15.5px;border-bottom:1px solid var(--border)}
   .nav-links a:last-child{border-bottom:0}
 
-  .hero{padding:var(--sp-10) 0 var(--sp-16)}
+  .hero{padding:0 0 var(--sp-16)}
+  /* photo leads on a phone, then the stats card, then the pitch —
+     requested order. The h1 stays first in the DOM (see .hero-inner
+     grid-template-areas above) so screen readers still meet the
+     headline before the image. */
+  .hero-inner{grid-template-areas:"media" "stats" "copy";row-gap:var(--sp-6)}
+  .hero-copy{padding:0 var(--sp-1)}
   .hero h1{font-size:clamp(30px,8.2vw,38px);line-height:1.18}
   .hero .lead{margin:var(--sp-4) 0 var(--sp-6);font-size:15.5px}
   .hero-actions{gap:var(--sp-2);flex-wrap:nowrap}
   .hero-actions .btn{flex:1;min-height:46px;padding:0 var(--sp-4);font-size:14px}
-  .hero-stats{gap:var(--sp-3);margin-top:var(--sp-8)}
-  .hero-stats > div{padding-inline-start:var(--sp-3)}
-  .hero-stats strong{font-size:19px}
-  .hero-stats span{font-size:11.5px;line-height:1.35}
-  .hero-media{margin-top:var(--sp-6)}
-  .hero-img{height:300px}
-  .hero-badge{inset-inline-start:0;bottom:-16px;padding:var(--sp-3)}
+
+  /* the stats were three cramped columns with wrapping labels — now an
+     elevated card with an icon chip per stat and real dividers */
+  .hero-stats{
+    max-width:none;gap:0;
+    background:var(--surface);border-radius:var(--r-lg);
+    box-shadow:var(--e3);border:1px solid var(--border);
+    padding:var(--sp-5) var(--sp-2);
+  }
+  .hero-stat{
+    display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;
+    padding-inline:var(--sp-2);
+  }
+  .hero-stat::before{content:none}
+  .hero-stat + .hero-stat{border-inline-start:1px solid var(--border)}
+  .hero-stat-icon{
+    display:grid;place-items:center;width:34px;height:34px;margin-bottom:2px;
+    border-radius:var(--r-full);color:var(--primary-700);
+    background:linear-gradient(150deg,var(--primary-50),var(--accent-100));
+  }
+  .hero-stat-icon svg{width:17px;height:17px}
+  .hero-stats strong{font-size:19px;white-space:nowrap}
+  .hero-stats strong.stat-static{font-size:16.5px}
+  .hero-stats span{font-size:10.5px;line-height:1.3}
+
+  .hero-media{margin-top:0}
+  .hero-img{height:280px}
+  /* used to hang -16px below the photo; now the stats card follows
+     immediately after, so the badge stays inside the frame instead of
+     overlapping the card's top edge */
+  .hero-badge{inset-inline-start:var(--sp-3);bottom:var(--sp-3);padding:var(--sp-3)}
   .eyebrow{margin-bottom:var(--sp-4);font-size:12.5px;padding:6px 12px}
   .doctors-grid,.why-grid{grid-template-columns:1fr}
   /* services stay two-up: one column makes the arch cards enormous */
@@ -626,7 +682,9 @@ svg{display:block}
 }
 
 @media(max-width:400px){
-  .hero-stats{gap:var(--sp-2)}
-  .hero-stats strong{font-size:17.5px}
-  .hero-stats span{font-size:11px}
+  .hero-stats{padding:var(--sp-4) var(--sp-1)}
+  .hero-stat{padding-inline:6px}
+  .hero-stats strong{font-size:17px}
+  .hero-stats strong.stat-static{font-size:15px}
+  .hero-stats span{font-size:10px}
 }
