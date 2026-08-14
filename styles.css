@@ -159,14 +159,19 @@ svg{display:block}
 .nav-inner{display:flex;align-items:center;gap:var(--sp-6);height:var(--header-h)}
 .brand{display:flex;align-items:center;gap:var(--sp-3);border-radius:var(--r-sm)}
 .brand-logo{width:40px;height:40px;object-fit:contain}
-.brand-name{font-size:19px;font-weight:500;color:var(--on-surface-muted)}
+.brand-name{font-size:19px;font-weight:500;color:var(--on-surface-muted);white-space:nowrap}
 .brand-name strong{color:var(--primary);font-weight:700}
 
-.nav-links{display:flex;align-items:center;gap:var(--sp-1);margin-inline:auto}
+/* the container caps at --maxw (1200px) on every desktop width, wide
+   monitor or not — so the nav needs real slack at its default size, not
+   only once a media query narrows things. 7 links + brand + CTA at 14px
+   padding measured out to exactly the available width with 0px to
+   spare, one font-metric difference from wrapping on any machine. */
+.nav-links{display:flex;align-items:center;gap:3px;margin-inline:auto}
 .nav-links a{
-  position:relative;
-  padding:9px 14px;border-radius:var(--r-full);
-  font-size:15px;font-weight:500;color:var(--on-surface-muted);
+  position:relative;white-space:nowrap;
+  padding:9px 11px;border-radius:var(--r-full);
+  font-size:14.5px;font-weight:500;color:var(--on-surface-muted);
   transition:color var(--dur) var(--ease-out),background-color var(--dur) var(--ease-out);
 }
 .nav-links a:hover{color:var(--on-surface);background:var(--surface-3)}
@@ -627,9 +632,8 @@ svg{display:block}
 
 /* ===== RESPONSIVE ===== */
 @media(max-width:1120px){
-  .brand-name{white-space:nowrap}
   .nav-links{gap:0}
-  .nav-links a{padding:9px 9px;font-size:14px;white-space:nowrap}
+  .nav-links a{padding:9px 8px;font-size:13.5px}
   .services-grid{grid-template-columns:repeat(3,1fr)}
   .about-inner,.contact-inner{gap:var(--sp-12)}
   .hero-inner{gap:var(--sp-12)}

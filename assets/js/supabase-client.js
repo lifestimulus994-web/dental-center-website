@@ -6,8 +6,8 @@
 // უსაფრთხოა Supabase-ის მოდელში) — რეალურ დაცვას რიგები (RLS
 // policies, იხ. supabase/schema.sql) უზრუნველყოფს, არა ამ გასაღების
 // დამალვა.
-const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const SUPABASE_URL = 'https://biofroklzxfogfztvjlv.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_cerF0XVDk8gTzlwvC6n52Q_psnyXCda';
 const SUPABASE_BUCKET = 'site-content';
 
 const isConfigured =
