@@ -27,7 +27,6 @@
     { id: 'kids', label: 'ბავშვთა თერაპია' },
     { id: 'orthopedics', label: 'ორთოპედია' },
     { id: 'orthodontics', label: 'ორთოდონტია' },
-    { id: 'surgery', label: 'ქირურგია' },
     { id: 'implant', label: 'იმპლანტაცია' },
     { id: 'aesthetic', label: 'ესთეტიკური სტომატოლოგია' },
     { id: 'lab', label: 'სატექნიკო ლაბორატორია' }
