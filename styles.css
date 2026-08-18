@@ -159,8 +159,12 @@ svg{display:block}
 .nav-inner{display:flex;align-items:center;gap:var(--sp-6);height:var(--header-h)}
 .brand{display:flex;align-items:center;gap:var(--sp-3);border-radius:var(--r-sm)}
 .brand-logo{width:40px;height:40px;object-fit:contain}
-.brand-name{font-size:19px;font-weight:500;color:var(--on-surface-muted);white-space:nowrap}
-.brand-name strong{color:var(--primary);font-weight:700}
+/* stacked instead of one long bilingual line — the nav row already runs
+   with 0px to spare (see note below), so the wider of the two words sets
+   the brand's width instead of both languages side by side */
+.brand-name{display:flex;flex-direction:column;line-height:1.2;white-space:nowrap}
+.brand-name strong{font-size:17px;font-weight:700;color:var(--primary)}
+.brand-name small{font-size:11px;font-weight:500;color:var(--on-surface-muted)}
 
 /* the container caps at --maxw (1200px) on every desktop width, wide
    monitor or not — so the nav needs real slack at its default size, not
