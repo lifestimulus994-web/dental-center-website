@@ -466,19 +466,26 @@ svg{display:block}
   text-align:center;color:var(--on-surface-muted);font-size:16px;
   padding:var(--sp-10) 0;
 }
-.results-doctor{margin-bottom:var(--sp-10)}
-.results-doctor:last-child{margin-bottom:0}
-.results-doctor h3{font-size:19px;font-weight:600;margin-bottom:var(--sp-5)}
-.results-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-  gap:var(--sp-4);
+.results-content{display:flex;flex-direction:column;gap:var(--sp-10)}
+.case-card:last-child{margin-bottom:0}
+.case-title{font-size:19px;font-weight:600;margin-bottom:var(--sp-5)}
+.case-compare{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-5)}
+.case-frame{
+  position:relative;aspect-ratio:4/3;overflow:hidden;
+  border-radius:var(--r-lg);background:var(--surface-3);box-shadow:var(--e1);
 }
-.results-card{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);
-  overflow:hidden;box-shadow:var(--e1);
+.case-slides{position:absolute;inset:0}
+.case-slide{
+  position:absolute;inset:0;
+  background-repeat:no-repeat;background-size:cover;background-position:center;
+  opacity:1;transition:opacity .6s ease;
 }
-.results-card img{width:100%;aspect-ratio:4/3;object-fit:cover}
-.results-card figcaption{padding:var(--sp-3) var(--sp-4);font-size:14px;color:var(--on-surface-muted)}
+.case-label{
+  position:absolute;z-index:2;top:12px;left:12px;
+  background:rgba(13,36,54,.72);color:#fff;font-size:12px;font-weight:700;
+  padding:6px 12px;border-radius:var(--r-full);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+}
 
 /* ===== WHY US ===== */
 .why{background:var(--surface-3)}
@@ -735,6 +742,7 @@ svg{display:block}
   .service-card{padding:var(--sp-3) var(--sp-3) var(--sp-5);border-radius:20px}
   .service-media{aspect-ratio:16/10;border-radius:70px 70px 14px 14px}
   .service-body{padding:var(--sp-4) var(--sp-2) 0;text-align:center}
+  .case-compare{grid-template-columns:1fr;gap:var(--sp-3)}
   .service-card h3{font-size:17px;margin-bottom:6px}
   .service-card p{font-size:13.5px;line-height:1.5}
   .footer-inner{grid-template-columns:1fr;gap:var(--sp-8)}

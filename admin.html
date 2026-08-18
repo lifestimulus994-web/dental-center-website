@@ -103,6 +103,16 @@
     .add-card svg{width:26px;height:26px}
     .add-card input{display:none}
 
+    .case-admin{padding:var(--sp-5);margin-bottom:var(--sp-6)}
+    .case-admin-head{display:flex;gap:var(--sp-3);align-items:center;margin-bottom:var(--sp-4)}
+    .case-admin-head input[type="text"]{
+      flex:1;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--r-sm);
+      font-family:inherit;font-size:14px;
+    }
+    .case-cols{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-5)}
+    .case-col .side-label{font-size:13px;font-weight:700;color:var(--on-surface-muted);margin-bottom:var(--sp-2)}
+    @media(max-width:640px){ .case-cols{grid-template-columns:1fr} }
+
     .toast{
       position:fixed;left:50%;bottom:24px;transform:translate(-50%,0);z-index:100;
       background:var(--surface-inverse);color:var(--on-inverse);padding:12px 20px;border-radius:var(--r-full);
@@ -183,14 +193,17 @@
     </section>
 
     <section class="admin-section">
-      <h2>ექიმები</h2>
-      <p class="hint">გალერეა — ფოტოების სლაიდი საიტზე (ავტომატურად იცვლება). შედეგები — ცალკე სექცია საიტზე, სადაც ექიმი თავის ნამუშევრებს აჩვენებს.</p>
+      <h2>ექიმები — ფოტო-გალერეა</h2>
+      <p class="hint">თითოეული ექიმის ფოტოების სლაიდი საიტზე — ავტომატურად იცვლება.</p>
       <div class="doctor-tabs" id="doctorTabs"></div>
-      <div class="subtab-row">
-        <button type="button" class="subtab is-active" data-subtab="gallery">გალერეა (სლაიდი)</button>
-        <button type="button" class="subtab" data-subtab="results">შედეგები</button>
-      </div>
       <div class="gallery-grid" id="doctorGrid"></div>
+    </section>
+
+    <section class="admin-section">
+      <h2>შედეგები — მანამდე / შემდეგ</h2>
+      <p class="hint">დაამატე რამდენი ქეისიც გინდა. თითოეულს ორი სლაიდი აქვს — მანამდე და შემდეგ — ატვირთე რამდენი ფოტოც გინდა თითო მხარეს.</p>
+      <button type="button" class="btn btn-primary btn-sm" id="addCaseBtn">+ ახალი ქეისის დამატება</button>
+      <div id="casesList" style="margin-top:var(--sp-6)"></div>
     </section>
 
   </div>

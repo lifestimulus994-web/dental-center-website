@@ -61,6 +61,25 @@ create table if not exists service_photos (
   created_at timestamptz not null default now()
 );
 
+-- შედეგების სექცია — მანამდე/შემდეგ ქეისები. თითო ქეისს შეიძლება ჰქონდეს
+-- რამდენიმე ფოტო ორივე მხარეს (result_case_photos.side = 'before'|'after'),
+-- ორივე მხარე ცალკე სლაიდად ტრიალებს საიტზე.
+create table if not exists result_cases (
+  id uuid primary key default gen_random_uuid(),
+  title text,
+  sort_order int not null default 0,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists result_case_photos (
+  id uuid primary key default gen_random_uuid(),
+  case_id uuid not null references result_cases(id) on delete cascade,
+  side text not null check (side in ('before','after')),
+  storage_path text not null,
+  sort_order int not null default 0,
+  created_at timestamptz not null default now()
+);
+
 -- ჯავშნის ფორმის ყოველი გაგზავნის ასლი — WhatsApp-ის გარდა, აქაც რჩება,
 -- რომ თუ შეტყობინება WhatsApp-ში გამოგრჩათ ან წაიშალა, პაციენტი არ დაიკარგოს.
 create table if not exists booking_requests (
@@ -83,6 +102,8 @@ alter table site_images enable row level security;
 alter table doctor_photos enable row level security;
 alter table doctor_results enable row level security;
 alter table service_photos enable row level security;
+alter table result_cases enable row level security;
+alter table result_case_photos enable row level security;
 alter table booking_requests enable row level security;
 
 drop policy if exists "public read doctors" on doctors;
@@ -110,6 +131,18 @@ drop policy if exists "public read service_photos" on service_photos;
 create policy "public read service_photos" on service_photos for select using (true);
 drop policy if exists "admin write service_photos" on service_photos;
 create policy "admin write service_photos" on service_photos for all
+  using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
+
+drop policy if exists "public read result_cases" on result_cases;
+create policy "public read result_cases" on result_cases for select using (true);
+drop policy if exists "admin write result_cases" on result_cases;
+create policy "admin write result_cases" on result_cases for all
+  using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
+
+drop policy if exists "public read result_case_photos" on result_case_photos;
+create policy "public read result_case_photos" on result_case_photos for select using (true);
+drop policy if exists "admin write result_case_photos" on result_case_photos;
+create policy "admin write result_case_photos" on result_case_photos for all
   using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
 
 drop policy if exists "public insert booking_requests" on booking_requests;

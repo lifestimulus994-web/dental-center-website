@@ -39,7 +39,6 @@
   ];
 
   let activeDoctor = 'galaktion';
-  let activeSubtab = 'gallery';
   let activeService = 'therapy';
 
   // booking_requests accepts public inserts (anyone can POST to it, not
@@ -159,6 +158,82 @@
     toast('ნაგულისხმევ ფოტოს დაუბრუნდა');
   });
 
+  // ===== GENERIC PHOTO GALLERY (add / delete / reorder) =====
+  // reused for the service slides and both sides of a before/after case —
+  // scoped to gridEl (not document-wide ids) so several can be mounted at
+  // once on the same page, which the results cases need.
+  async function mountGallery(gridEl, { table, match, folder, addLabel }) {
+    gridEl.innerHTML = '<p class="hint">იტვირთება...</p>';
+
+    const { data: fetched, error } = await db.client
+      .from(table).select('*').match(match).order('sort_order', { ascending: true });
+    if (error) { gridEl.innerHTML = `<p class="hint">შეცდომა: ${error.message}</p>`; return; }
+    const rows = fetched || [];
+    const reload = () => mountGallery(gridEl, { table, match, folder, addLabel });
+
+    const items = rows.map((row, idx) => `
+      <div class="card gallery-item" data-id="${row.id}">
+        <img src="${db.publicUrl(row.storage_path)}" alt="" />
+        <div class="order-row">
+          <button type="button" class="btn btn-ghost" data-action="up" ${idx === 0 ? 'disabled' : ''}>↑</button>
+          <button type="button" class="btn btn-ghost" data-action="down" ${idx === rows.length - 1 ? 'disabled' : ''}>↓</button>
+        </div>
+        <button type="button" class="btn btn-danger btn-sm" style="width:100%" data-action="delete">წაშლა</button>
+      </div>`).join('');
+
+    const inputId = `add-${Math.random().toString(36).slice(2, 9)}`;
+    gridEl.innerHTML = items + `
+      <label class="add-card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        ${addLabel}
+        <input type="file" accept="image/*" id="${inputId}" />
+      </label>
+    `;
+
+    gridEl.querySelector(`#${inputId}`).addEventListener('change', async (ev) => {
+      const file = ev.target.files[0];
+      if (!file) return;
+      try {
+        const path = await uploadFile(file, folder);
+        const nextOrder = rows.length;
+        const { error: insErr } = await db.client.from(table).insert({ ...match, storage_path: path, sort_order: nextOrder });
+        if (insErr) throw insErr;
+        toast('ფოტო დაემატა');
+        reload();
+      } catch (e) {
+        toast('შეცდომა: ' + (e.message || e));
+      }
+    });
+
+    gridEl.querySelectorAll('[data-action="delete"]').forEach((b) => {
+      b.addEventListener('click', async () => {
+        const id = b.closest('[data-id]').dataset.id;
+        if (!confirm('წავშალო ეს ფოტო?')) return;
+        await db.client.from(table).delete().eq('id', id);
+        toast('წაშლილია');
+        reload();
+      });
+    });
+
+    gridEl.querySelectorAll('[data-action="up"],[data-action="down"]').forEach((b) => {
+      b.addEventListener('click', async () => {
+        const id = b.closest('[data-id]').dataset.id;
+        const dir = b.dataset.action === 'up' ? -1 : 1;
+        const idx = rows.findIndex((r) => r.id === id);
+        const swapWith = rows[idx + dir];
+        if (!swapWith) return;
+        const a = rows[idx], bRow = swapWith;
+        await Promise.all([
+          db.client.from(table).update({ sort_order: bRow.sort_order }).eq('id', a.id),
+          db.client.from(table).update({ sort_order: a.sort_order }).eq('id', bRow.id)
+        ]);
+        reload();
+      });
+    });
+  }
+
   // ===== SERVICES: photo slides =====
   function renderServiceTabs() {
     const tabs = document.getElementById('serviceTabs');
@@ -175,85 +250,16 @@
     loadServiceGrid();
   });
 
-  async function loadServiceGrid() {
-    const grid = document.getElementById('serviceGrid');
-    grid.innerHTML = '<p class="hint">იტვირთება...</p>';
-
-    const { data: fetched, error } = await db.client
-      .from('service_photos')
-      .select('*')
-      .eq('service_key', activeService)
-      .order('sort_order', { ascending: true });
-
-    if (error) { grid.innerHTML = `<p class="hint">შეცდომა: ${error.message}</p>`; return; }
-    const rows = fetched || [];
-
-    const items = rows.map((row, idx) => `
-      <div class="card gallery-item" data-id="${row.id}">
-        <img src="${db.publicUrl(row.storage_path)}" alt="" />
-        <div class="order-row">
-          <button type="button" class="btn btn-ghost" data-action="up" ${idx === 0 ? 'disabled' : ''}>↑</button>
-          <button type="button" class="btn btn-ghost" data-action="down" ${idx === rows.length - 1 ? 'disabled' : ''}>↓</button>
-        </div>
-        <button type="button" class="btn btn-danger btn-sm" style="width:100%" data-action="delete">წაშლა</button>
-      </div>`).join('');
-
-    grid.innerHTML = items + `
-      <label class="add-card">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 5v14M5 12h14"/>
-        </svg>
-        + ფოტოს დამატება სლაიდში
-        <input type="file" accept="image/*" id="addServicePhotoInput" />
-      </label>
-    `;
-
-    document.getElementById('addServicePhotoInput').addEventListener('change', async (ev) => {
-      const file = ev.target.files[0];
-      if (!file) return;
-      try {
-        const folder = `services/${activeService}`;
-        const path = await uploadFile(file, folder);
-        const nextOrder = rows.length;
-        const { error: insErr } = await db.client.from('service_photos').insert({
-          service_key: activeService, storage_path: path, sort_order: nextOrder
-        });
-        if (insErr) throw insErr;
-        toast('ფოტო დაემატა');
-        loadServiceGrid();
-      } catch (e) {
-        toast('შეცდომა: ' + (e.message || e));
-      }
-    });
-
-    grid.querySelectorAll('[data-action="delete"]').forEach((b) => {
-      b.addEventListener('click', async () => {
-        const id = b.closest('[data-id]').dataset.id;
-        if (!confirm('წავშალო ეს ფოტო?')) return;
-        await db.client.from('service_photos').delete().eq('id', id);
-        toast('წაშლილია');
-        loadServiceGrid();
-      });
-    });
-
-    grid.querySelectorAll('[data-action="up"],[data-action="down"]').forEach((b) => {
-      b.addEventListener('click', async () => {
-        const id = b.closest('[data-id]').dataset.id;
-        const dir = b.dataset.action === 'up' ? -1 : 1;
-        const idx = rows.findIndex((r) => r.id === id);
-        const swapWith = rows[idx + dir];
-        if (!swapWith) return;
-        const a = rows[idx], bRow = swapWith;
-        await Promise.all([
-          db.client.from('service_photos').update({ sort_order: bRow.sort_order }).eq('id', a.id),
-          db.client.from('service_photos').update({ sort_order: a.sort_order }).eq('id', bRow.id)
-        ]);
-        loadServiceGrid();
-      });
+  function loadServiceGrid() {
+    mountGallery(document.getElementById('serviceGrid'), {
+      table: 'service_photos',
+      match: { service_key: activeService },
+      folder: `services/${activeService}`,
+      addLabel: '+ ფოტოს დამატება სლაიდში'
     });
   }
 
-  // ===== DOCTORS: gallery + results =====
+  // ===== DOCTORS: photo gallery =====
   function renderDoctorTabs() {
     const tabs = document.getElementById('doctorTabs');
     tabs.innerHTML = DOCTORS.map((d) =>
@@ -269,107 +275,88 @@
     loadDoctorGrid();
   });
 
-  document.querySelectorAll('.subtab').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      activeSubtab = btn.dataset.subtab;
-      document.querySelectorAll('.subtab').forEach((b) => b.classList.toggle('is-active', b === btn));
-      loadDoctorGrid();
+  function loadDoctorGrid() {
+    mountGallery(document.getElementById('doctorGrid'), {
+      table: 'doctor_photos',
+      match: { doctor_id: activeDoctor },
+      folder: `doctors/${activeDoctor}/gallery`,
+      addLabel: '+ ფოტოს დამატება გალერეაში'
     });
-  });
+  }
 
-  async function loadDoctorGrid() {
-    const table = activeSubtab === 'gallery' ? 'doctor_photos' : 'doctor_results';
-    const grid = document.getElementById('doctorGrid');
-    grid.innerHTML = '<p class="hint">იტვირთება...</p>';
+  // ===== RESULTS: before/after cases =====
+  async function loadCases() {
+    const list = document.getElementById('casesList');
+    list.innerHTML = '<p class="hint">იტვირთება...</p>';
 
     const { data: fetched, error } = await db.client
-      .from(table)
-      .select('*')
-      .eq('doctor_id', activeDoctor)
-      .order('sort_order', { ascending: true });
-
-    if (error) { grid.innerHTML = `<p class="hint">შეცდომა: ${error.message}</p>`; return; }
+      .from('result_cases').select('*').order('sort_order', { ascending: true });
+    if (error) { list.innerHTML = `<p class="hint">შეცდომა: ${error.message}</p>`; return; }
     const rows = fetched || [];
 
-    const items = rows.map((row, idx) => {
-      const url = db.publicUrl(row.storage_path);
-      const caption = table === 'doctor_results'
-        ? `<textarea placeholder="წარწერა (არასავალდებულო)" data-id="${row.id}">${row.caption || ''}</textarea>`
-        : '';
-      return `
-        <div class="card gallery-item" data-id="${row.id}">
-          <img src="${url}" alt="" />
-          ${caption}
-          <div class="order-row">
-            <button type="button" class="btn btn-ghost" data-action="up" ${idx === 0 ? 'disabled' : ''}>↑</button>
-            <button type="button" class="btn btn-ghost" data-action="down" ${idx === rows.length - 1 ? 'disabled' : ''}>↓</button>
+    if (!rows.length) {
+      list.innerHTML = '<p class="hint">ჯერ არცერთი ქეისი არ დამატებულა.</p>';
+      return;
+    }
+
+    list.innerHTML = rows.map((c) => `
+      <div class="card case-admin" data-case-id="${c.id}">
+        <div class="case-admin-head">
+          <input type="text" placeholder="სათაური (არასავალდებულო)" value="${escapeHtml(c.title || '')}" data-action="title" />
+          <button type="button" class="btn btn-danger btn-sm" data-action="delete-case">ქეისის წაშლა</button>
+        </div>
+        <div class="case-cols">
+          <div class="case-col">
+            <div class="side-label">მანამდე</div>
+            <div class="gallery-grid" data-side="before"></div>
           </div>
-          <button type="button" class="btn btn-danger btn-sm" style="width:100%" data-action="delete">წაშლა</button>
-        </div>`;
-    }).join('');
+          <div class="case-col">
+            <div class="side-label">შემდეგ</div>
+            <div class="gallery-grid" data-side="after"></div>
+          </div>
+        </div>
+      </div>
+    `).join('');
 
-    const addLabel = table === 'doctor_photos' ? '+ ფოტოს დამატება გალერეაში' : '+ შედეგის ფოტოს დამატება';
-    grid.innerHTML = items + `
-      <label class="add-card">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 5v14M5 12h14"/>
-        </svg>
-        ${addLabel}
-        <input type="file" accept="image/*" id="addPhotoInput" />
-      </label>
-    `;
+    rows.forEach((c) => {
+      const card = list.querySelector(`[data-case-id="${c.id}"]`);
 
-    document.getElementById('addPhotoInput').addEventListener('change', async (ev) => {
-      const file = ev.target.files[0];
-      if (!file) return;
-      try {
-        const folder = `doctors/${activeDoctor}/${table === 'doctor_photos' ? 'gallery' : 'results'}`;
-        const path = await uploadFile(file, folder);
-        const nextOrder = rows.length;
-        const { error: insErr } = await db.client.from(table).insert({
-          doctor_id: activeDoctor, storage_path: path, sort_order: nextOrder
-        });
-        if (insErr) throw insErr;
-        toast('ფოტო დაემატა');
-        loadDoctorGrid();
-      } catch (e) {
-        toast('შეცდომა: ' + (e.message || e));
-      }
-    });
-
-    grid.querySelectorAll('textarea').forEach((ta) => {
-      ta.addEventListener('change', async () => {
-        await db.client.from('doctor_results').update({ caption: ta.value }).eq('id', ta.dataset.id);
-        toast('წარწერა შენახულია');
+      mountGallery(card.querySelector('[data-side="before"]'), {
+        table: 'result_case_photos',
+        match: { case_id: c.id, side: 'before' },
+        folder: `results/${c.id}/before`,
+        addLabel: '+ ფოტოს დამატება'
       });
-    });
-
-    grid.querySelectorAll('[data-action="delete"]').forEach((b) => {
-      b.addEventListener('click', async () => {
-        const id = b.closest('[data-id]').dataset.id;
-        if (!confirm('წავშალო ეს ფოტო?')) return;
-        await db.client.from(table).delete().eq('id', id);
-        toast('წაშლილია');
-        loadDoctorGrid();
+      mountGallery(card.querySelector('[data-side="after"]'), {
+        table: 'result_case_photos',
+        match: { case_id: c.id, side: 'after' },
+        folder: `results/${c.id}/after`,
+        addLabel: '+ ფოტოს დამატება'
       });
-    });
 
-    grid.querySelectorAll('[data-action="up"],[data-action="down"]').forEach((b) => {
-      b.addEventListener('click', async () => {
-        const id = b.closest('[data-id]').dataset.id;
-        const dir = b.dataset.action === 'up' ? -1 : 1;
-        const idx = rows.findIndex((r) => r.id === id);
-        const swapWith = rows[idx + dir];
-        if (!swapWith) return;
-        const a = rows[idx], bRow = swapWith;
-        await Promise.all([
-          db.client.from(table).update({ sort_order: bRow.sort_order }).eq('id', a.id),
-          db.client.from(table).update({ sort_order: a.sort_order }).eq('id', bRow.id)
-        ]);
-        loadDoctorGrid();
+      card.querySelector('[data-action="title"]').addEventListener('change', async (ev) => {
+        await db.client.from('result_cases').update({ title: ev.target.value || null }).eq('id', c.id);
+        toast('შენახულია');
+      });
+
+      card.querySelector('[data-action="delete-case"]').addEventListener('click', async () => {
+        if (!confirm('წავშალო მთელი ეს ქეისი — ორივე მხარის ფოტოებთან ერთად?')) return;
+        await db.client.from('result_cases').delete().eq('id', c.id);
+        toast('ქეისი წაშლილია');
+        loadCases();
       });
     });
   }
+
+  document.getElementById('addCaseBtn').addEventListener('click', async () => {
+    const { data: existing } = await db.client
+      .from('result_cases').select('sort_order').order('sort_order', { ascending: false }).limit(1);
+    const nextOrder = existing && existing.length ? existing[0].sort_order + 1 : 0;
+    const { error } = await db.client.from('result_cases').insert({ sort_order: nextOrder });
+    if (error) { toast('შეცდომა: ' + error.message); return; }
+    toast('ქეისი დაემატა');
+    loadCases();
+  });
 
   // ===== BOOKING REQUESTS =====
   async function loadRequests() {
@@ -420,6 +407,7 @@
     loadServiceGrid();
     renderDoctorTabs();
     loadDoctorGrid();
+    loadCases();
   }
 
   checkSession();

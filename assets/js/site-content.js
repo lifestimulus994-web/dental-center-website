@@ -164,48 +164,73 @@
     }, AUTO_ROTATE_MS);
   }
 
-  // ===== 3) ექიმების შედეგები (ახალი სექცია) =====
+  // ===== 3) შედეგები — მანამდე/შემდეგ ქეისები =====
   try {
-    const { data: results } = await db.client
-      .from('doctor_results')
-      .select('doctor_id,storage_path,caption,sort_order')
-      .order('sort_order', { ascending: true });
+    const [{ data: cases }, { data: photos }] = await Promise.all([
+      db.client.from('result_cases').select('id,title,sort_order').order('sort_order', { ascending: true }),
+      db.client.from('result_case_photos').select('case_id,side,storage_path,sort_order').order('sort_order', { ascending: true })
+    ]);
 
     const section = document.getElementById('results');
-    if (!section || !results || !results.length) return;
+    if (!section || !cases || !cases.length) return;
 
-    const byDoctor = new Map();
-    results.forEach((r) => {
-      if (!byDoctor.has(r.doctor_id)) byDoctor.set(r.doctor_id, []);
-      byDoctor.get(r.doctor_id).push(r);
+    const byCase = new Map();
+    (photos || []).forEach((p) => {
+      if (!byCase.has(p.case_id)) byCase.set(p.case_id, { before: [], after: [] });
+      byCase.get(p.case_id)[p.side].push(p);
     });
 
-    const nameMap = {
-      galaktion: 'გალაქტიონ (გიგა) ღვინჯილია',
-      beka: 'ბექა მიროტაძე',
-      lika: 'ლიკა გოგია'
+    // ცარიელი ქეისი (ორივე მხარეს ჯერ არცერთი ფოტო) საერთოდ არ გამოჩნდეს
+    const usableCases = cases.filter((c) => {
+      const g = byCase.get(c.id);
+      return g && (g.before.length || g.after.length);
+    });
+    if (!usableCases.length) return;
+
+    const frameHtml = (side, label, items) => {
+      const slides = items.map((p) => {
+        const url = db.publicUrl(p.storage_path);
+        return url ? `<div class="case-slide" style="background-image:url('${url}')"></div>` : '';
+      }).join('');
+      return `
+        <div class="case-frame" data-side="${side}" role="img" aria-label="${label}">
+          <span class="case-label">${label}</span>
+          <div class="case-slides">${slides}</div>
+        </div>`;
     };
 
     const wrap = section.querySelector('.results-content');
     wrap.innerHTML = '';
-    for (const [doctorId, items] of byDoctor) {
-      const block = document.createElement('div');
-      block.className = 'results-doctor reveal';
-      const grid = items.map((r) => {
-        const url = db.publicUrl(r.storage_path);
-        if (!url) return '';
-        return `<figure class="results-card">
-          <img src="${url}" alt="${(r.caption || nameMap[doctorId] || '').replace(/"/g, '&quot;')}" loading="lazy" />
-          ${r.caption ? `<figcaption>${r.caption}</figcaption>` : ''}
-        </figure>`;
-      }).join('');
-      block.innerHTML = `<h3>${nameMap[doctorId] || doctorId}</h3><div class="results-grid">${grid}</div>`;
-      wrap.appendChild(block);
-    }
+    usableCases.forEach((c) => {
+      const g = byCase.get(c.id) || { before: [], after: [] };
+      const card = document.createElement('article');
+      card.className = 'case-card reveal';
+      card.innerHTML = `
+        ${c.title ? `<h3 class="case-title">${c.title}</h3>` : ''}
+        <div class="case-compare">
+          ${frameHtml('before', 'მანამდე', g.before)}
+          ${frameHtml('after', 'შემდეგ', g.after)}
+        </div>`;
+      wrap.appendChild(card);
+      card.querySelectorAll('.case-frame').forEach(initCaseFrame);
+    });
+
     section.classList.add('has-results');
     document.querySelectorAll('.reveal').forEach((el) => {
       if (!window.__revealObserver) return;
       window.__revealObserver.observe(el);
     });
   } catch (e) { /* leave the empty-state message in place */ }
+
+  function initCaseFrame(frame) {
+    const slides = [...frame.querySelectorAll('.case-slide')];
+    if (slides.length < 2 || prefersReducedMotion) return;
+    slides.forEach((s, idx) => { s.style.opacity = idx === 0 ? '1' : '0'; });
+    let i = 0;
+    setInterval(() => {
+      slides[i].style.opacity = '0';
+      i = (i + 1) % slides.length;
+      slides[i].style.opacity = '1';
+    }, AUTO_ROTATE_MS);
+  }
 })();
