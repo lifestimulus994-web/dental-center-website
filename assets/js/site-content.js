@@ -6,7 +6,7 @@
   const db = window.DentalDB;
   if (!db || !db.isConfigured) return;
 
-  const AUTO_ROTATE_MS = 4000;
+  const AUTO_ROTATE_MS = 2500;
   const prefersReducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ===== 1) ჰერო / ჩვენ შესახებ / სერვისების ფოტოები =====
