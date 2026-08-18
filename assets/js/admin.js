@@ -20,26 +20,18 @@
 
   const DEFAULT_ASSET = {
     hero: 'assets/hero-clinic.jpg',
-    about: 'assets/clinic-room.jpg',
-    service_therapy: 'assets/services/therapy.jpg',
-    service_kids: 'assets/services/kids.jpg',
-    service_orthopedics: 'assets/services/orthopedics.jpg',
-    service_orthodontics: 'assets/services/orthodontics.jpg',
-    service_surgery: 'assets/services/surgery.jpg',
-    service_implant: 'assets/services/implant.jpg',
-    service_aesthetic: 'assets/services/aesthetic.jpg',
-    service_lab: 'assets/services/lab.jpg'
+    about: 'assets/clinic-room.jpg'
   };
-  const SERVICE_LABELS = {
-    service_therapy: 'თერაპია',
-    service_kids: 'ბავშვთა თერაპია',
-    service_orthopedics: 'ორთოპედია',
-    service_orthodontics: 'ორთოდონტია',
-    service_surgery: 'ქირურგია',
-    service_implant: 'იმპლანტაცია',
-    service_aesthetic: 'ესთეტიკური სტომატოლოგია',
-    service_lab: 'სატექნიკო ლაბორატორია'
-  };
+  const SERVICES = [
+    { id: 'therapy', label: 'თერაპია' },
+    { id: 'kids', label: 'ბავშვთა თერაპია' },
+    { id: 'orthopedics', label: 'ორთოპედია' },
+    { id: 'orthodontics', label: 'ორთოდონტია' },
+    { id: 'surgery', label: 'ქირურგია' },
+    { id: 'implant', label: 'იმპლანტაცია' },
+    { id: 'aesthetic', label: 'ესთეტიკური სტომატოლოგია' },
+    { id: 'lab', label: 'სატექნიკო ლაბორატორია' }
+  ];
   const DOCTORS = [
     { id: 'galaktion', name: 'გალაქტიონ (გიგა) ღვინჯილია' },
     { id: 'beka', name: 'ბექა მიროტაძე' },
@@ -48,6 +40,7 @@
 
   let activeDoctor = 'galaktion';
   let activeSubtab = 'gallery';
+  let activeService = 'therapy';
 
   // booking_requests accepts public inserts (anyone can POST to it, not
   // just the site's own form), so its contents are untrusted input and
@@ -118,22 +111,7 @@
     return path;
   }
 
-  // ===== HERO / ABOUT / SERVICES (single-image slots) =====
-  function renderServiceSlots() {
-    const grid = document.getElementById('servicesGrid');
-    grid.innerHTML = Object.keys(SERVICE_LABELS).map((key) => `
-      <div class="card slot-card" data-slot="${key}">
-        <img class="thumb" alt="" />
-        <div class="label">${SERVICE_LABELS[key]}</div>
-        <div class="actions">
-          <label class="btn btn-primary btn-sm">ატვირთვა<input type="file" accept="image/*" /></label>
-          <button type="button" class="btn btn-danger btn-sm" data-action="reset">ნაგულისხმევზე</button>
-        </div>
-        <div class="status"></div>
-      </div>
-    `).join('');
-  }
-
+  // ===== HERO / ABOUT (single-image slots) =====
   async function loadSlots() {
     const { data: rows } = await db.client.from('site_images').select('section_key,storage_path');
     const byKey = new Map((rows || []).map((r) => [r.section_key, r.storage_path]));
@@ -180,6 +158,100 @@
     await loadSlots();
     toast('ნაგულისხმევ ფოტოს დაუბრუნდა');
   });
+
+  // ===== SERVICES: photo slides =====
+  function renderServiceTabs() {
+    const tabs = document.getElementById('serviceTabs');
+    tabs.innerHTML = SERVICES.map((s) =>
+      `<button type="button" class="doctor-tab${s.id === activeService ? ' is-active' : ''}" data-service-tab="${s.id}">${s.label}</button>`
+    ).join('');
+  }
+
+  document.getElementById('serviceTabs').addEventListener('click', (ev) => {
+    const btn = ev.target.closest('[data-service-tab]');
+    if (!btn) return;
+    activeService = btn.dataset.serviceTab;
+    renderServiceTabs();
+    loadServiceGrid();
+  });
+
+  async function loadServiceGrid() {
+    const grid = document.getElementById('serviceGrid');
+    grid.innerHTML = '<p class="hint">იტვირთება...</p>';
+
+    const { data: fetched, error } = await db.client
+      .from('service_photos')
+      .select('*')
+      .eq('service_key', activeService)
+      .order('sort_order', { ascending: true });
+
+    if (error) { grid.innerHTML = `<p class="hint">შეცდომა: ${error.message}</p>`; return; }
+    const rows = fetched || [];
+
+    const items = rows.map((row, idx) => `
+      <div class="card gallery-item" data-id="${row.id}">
+        <img src="${db.publicUrl(row.storage_path)}" alt="" />
+        <div class="order-row">
+          <button type="button" class="btn btn-ghost" data-action="up" ${idx === 0 ? 'disabled' : ''}>↑</button>
+          <button type="button" class="btn btn-ghost" data-action="down" ${idx === rows.length - 1 ? 'disabled' : ''}>↓</button>
+        </div>
+        <button type="button" class="btn btn-danger btn-sm" style="width:100%" data-action="delete">წაშლა</button>
+      </div>`).join('');
+
+    grid.innerHTML = items + `
+      <label class="add-card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        + ფოტოს დამატება სლაიდში
+        <input type="file" accept="image/*" id="addServicePhotoInput" />
+      </label>
+    `;
+
+    document.getElementById('addServicePhotoInput').addEventListener('change', async (ev) => {
+      const file = ev.target.files[0];
+      if (!file) return;
+      try {
+        const folder = `services/${activeService}`;
+        const path = await uploadFile(file, folder);
+        const nextOrder = rows.length;
+        const { error: insErr } = await db.client.from('service_photos').insert({
+          service_key: activeService, storage_path: path, sort_order: nextOrder
+        });
+        if (insErr) throw insErr;
+        toast('ფოტო დაემატა');
+        loadServiceGrid();
+      } catch (e) {
+        toast('შეცდომა: ' + (e.message || e));
+      }
+    });
+
+    grid.querySelectorAll('[data-action="delete"]').forEach((b) => {
+      b.addEventListener('click', async () => {
+        const id = b.closest('[data-id]').dataset.id;
+        if (!confirm('წავშალო ეს ფოტო?')) return;
+        await db.client.from('service_photos').delete().eq('id', id);
+        toast('წაშლილია');
+        loadServiceGrid();
+      });
+    });
+
+    grid.querySelectorAll('[data-action="up"],[data-action="down"]').forEach((b) => {
+      b.addEventListener('click', async () => {
+        const id = b.closest('[data-id]').dataset.id;
+        const dir = b.dataset.action === 'up' ? -1 : 1;
+        const idx = rows.findIndex((r) => r.id === id);
+        const swapWith = rows[idx + dir];
+        if (!swapWith) return;
+        const a = rows[idx], bRow = swapWith;
+        await Promise.all([
+          db.client.from('service_photos').update({ sort_order: bRow.sort_order }).eq('id', a.id),
+          db.client.from('service_photos').update({ sort_order: a.sort_order }).eq('id', bRow.id)
+        ]);
+        loadServiceGrid();
+      });
+    });
+  }
 
   // ===== DOCTORS: gallery + results =====
   function renderDoctorTabs() {
@@ -343,8 +415,9 @@
 
   function boot() {
     loadRequests();
-    renderServiceSlots();
     loadSlots();
+    renderServiceTabs();
+    loadServiceGrid();
     renderDoctorTabs();
     loadDoctorGrid();
   }

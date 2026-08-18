@@ -52,6 +52,15 @@ create table if not exists doctor_results (
   created_at timestamptz not null default now()
 );
 
+-- სერვისის ბარათის ფოტო-სლაიდი (საიტზე ავტომატურად იცვლება)
+create table if not exists service_photos (
+  id uuid primary key default gen_random_uuid(),
+  service_key text not null,
+  storage_path text not null,
+  sort_order int not null default 0,
+  created_at timestamptz not null default now()
+);
+
 -- ჯავშნის ფორმის ყოველი გაგზავნის ასლი — WhatsApp-ის გარდა, აქაც რჩება,
 -- რომ თუ შეტყობინება WhatsApp-ში გამოგრჩათ ან წაიშალა, პაციენტი არ დაიკარგოს.
 create table if not exists booking_requests (
@@ -73,6 +82,7 @@ alter table doctors enable row level security;
 alter table site_images enable row level security;
 alter table doctor_photos enable row level security;
 alter table doctor_results enable row level security;
+alter table service_photos enable row level security;
 alter table booking_requests enable row level security;
 
 drop policy if exists "public read doctors" on doctors;
@@ -94,6 +104,12 @@ drop policy if exists "public read doctor_results" on doctor_results;
 create policy "public read doctor_results" on doctor_results for select using (true);
 drop policy if exists "admin write doctor_results" on doctor_results;
 create policy "admin write doctor_results" on doctor_results for all
+  using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
+
+drop policy if exists "public read service_photos" on service_photos;
+create policy "public read service_photos" on service_photos for select using (true);
+drop policy if exists "admin write service_photos" on service_photos;
+create policy "admin write service_photos" on service_photos for all
   using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
 
 drop policy if exists "public insert booking_requests" on booking_requests;

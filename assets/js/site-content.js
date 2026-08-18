@@ -113,6 +113,50 @@
     restart();
   }
 
+  // ===== 2b) სერვისების ფოტო-სლაიდები =====
+  try {
+    const { data: photos } = await db.client
+      .from('service_photos')
+      .select('service_key,storage_path,sort_order')
+      .order('sort_order', { ascending: true });
+
+    const byService = new Map();
+    (photos || []).forEach((p) => {
+      if (!byService.has(p.service_key)) byService.set(p.service_key, []);
+      byService.get(p.service_key).push(p);
+    });
+
+    document.querySelectorAll('.service-media').forEach((media) => {
+      const key = media.dataset.service;
+      const extra = byService.get(key) || [];
+      if (!extra.length) return; // მხოლოდ ჩაშენებული ფოტო რჩება
+
+      const slidesWrap = media.querySelector('.service-slides');
+      extra.forEach((p) => {
+        const url = db.publicUrl(p.storage_path);
+        if (!url) return;
+        const slide = document.createElement('div');
+        slide.className = 'service-slide';
+        slide.style.backgroundImage = `url("${url}")`;
+        slidesWrap.appendChild(slide);
+      });
+
+      initServiceSlides(media);
+    });
+  } catch (e) { /* fall back silently */ }
+
+  function initServiceSlides(media) {
+    const slides = [...media.querySelectorAll('.service-slide')];
+    if (slides.length < 2 || prefersReducedMotion) return;
+    slides.forEach((s, idx) => { s.style.opacity = idx === 0 ? '1' : '0'; });
+    let i = 0;
+    setInterval(() => {
+      slides[i].style.opacity = '0';
+      i = (i + 1) % slides.length;
+      slides[i].style.opacity = '1';
+    }, AUTO_ROTATE_MS);
+  }
+
   // ===== 3) ექიმების შედეგები (ახალი სექცია) =====
   try {
     const { data: results } = await db.client
