@@ -132,6 +132,13 @@
       if (!extra.length) return; // მხოლოდ ჩაშენებული ფოტო რჩება
 
       const slidesWrap = media.querySelector('.service-slides');
+      // a card with no bundled photo (e.g. ქირურგია) has an empty base
+      // slide reserving the spot — once real photos exist, drop the blank
+      // frame instead of rotating it in alongside them
+      const baseSlide = slidesWrap.querySelector('.service-slide');
+      if (baseSlide && getComputedStyle(baseSlide).backgroundImage === 'none') {
+        baseSlide.remove();
+      }
       extra.forEach((p) => {
         const url = db.publicUrl(p.storage_path);
         if (!url) return;
